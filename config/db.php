@@ -5,11 +5,11 @@
  * ========================================================
  */
 
-// Database Hostinger shared hosting parameters
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'gurukul_db');
-define('DB_USER', 'root');
-define('DB_PASS', 'GurukulLocal2026!');
+// Database parameters (support environment variables for cloud deployments like Vercel)
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_NAME', getenv('DB_NAME') ?: 'gurukul_db');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: 'GurukulLocal2026!');
 
 // Options for secure PDO connections
 $options = [
