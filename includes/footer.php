@@ -29,7 +29,7 @@ if (isset($pdo)) {
             <div class="footer-top">
                 <div class="footer-brand">
                     <a href="index.php" class="logo">
-                        <div class="logo-icon">G</div>
+                        <img src="images/Logo PNG.png" alt="Gurukul Crest" class="logo-crest">
                         <span>Gurukul</span>
                     </a>
                     <p>Fusing traditional value ethics with advanced STEM methodologies to nurture global, creative, and enlightened leaders of tomorrow.</p>

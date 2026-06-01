@@ -61,7 +61,7 @@ function is_nav_active($file, $current) {
     <header class="header">
         <div class="container header-container">
             <a href="index.php" class="logo">
-                <div class="logo-icon">G</div>
+                <img src="images/Logo PNG.png" alt="Gurukul Crest" class="logo-crest">
                 <span>Gurukul</span>
             </a>
             
