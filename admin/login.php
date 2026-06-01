@@ -282,7 +282,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="login-card">
         <div class="login-header">
-            <div class="logo-box">G</div>
+            <div class="logo-box" style="background: #FFFFFF; padding: 3px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <img src="/images/Logo%20PNG.png" alt="Gurukul Crest" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+            </div>
             <h1>Gurukul CMS</h1>
             <p>Authorized Administrator Access</p>
         </div>

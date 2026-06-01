@@ -13,7 +13,9 @@ function is_active($file, $current) {
 ?>
 <aside class="admin-sidebar" id="admin-sidebar">
     <div class="sidebar-brand">
-        <div class="brand-icon">G</div>
+        <div class="brand-icon" style="background: #FFFFFF; padding: 2px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+            <img src="/images/Logo%20PNG.png" alt="Gurukul Crest" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+        </div>
         <div class="brand-text">Gurukul CMS</div>
     </div>
     
