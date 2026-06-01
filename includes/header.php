@@ -29,6 +29,9 @@ function is_nav_active($file, $current) {
     <meta property="og:description" content="<?php echo $meta_description ?? 'Welcome to Gurukul Academy - A premium institute of learning fostering academic excellence, moral leadership, and holistic development.'; ?>">
     <meta property="og:type" content="website">
     
+    <!-- Favicon Branding -->
+    <link rel="icon" type="image/png" href="images/Logo PNG.png">
+    
     <!-- Global Stylesheets (Preventing Cache Versioning) -->
     <link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>">
     

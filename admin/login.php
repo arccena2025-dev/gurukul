@@ -70,6 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Outfit & Plus Jakarta Sans typography -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Favicon Branding -->
+    <link rel="icon" type="image/png" href="../images/Logo PNG.png">
+    
     <!-- Login Page specific premium custom CSS styling -->
     <style>
         :root {
