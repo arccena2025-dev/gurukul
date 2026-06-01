@@ -30,7 +30,7 @@ function is_nav_active($file, $current) {
     <meta property="og:type" content="website">
     
     <!-- Favicon Branding -->
-    <link rel="icon" type="image/png" href="images/Logo PNG.png">
+    <link rel="icon" type="image/png" href="/images/Logo%20PNG.png">
     
     <!-- Global Stylesheets (Preventing Cache Versioning) -->
     <link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>">

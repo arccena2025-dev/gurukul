@@ -29,7 +29,7 @@ if ($page_name === 'index') {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Favicon Branding -->
-    <link rel="icon" type="image/png" href="../images/Logo PNG.png">
+    <link rel="icon" type="image/png" href="/images/Logo%20PNG.png">
     
     <!-- Admin Dashboard Main Stylesheet -->
     <link rel="stylesheet" href="css/admin-style.css?v=1.0">
