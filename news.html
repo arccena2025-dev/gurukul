@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Stay updated with the latest news, announcements, academic calendars, and upcoming events at Gurukul Academy. Reserve RSVP seats online.">
+    <title>News & Events | Gurukul Academy</title>
+    
+    <!-- Open Graph SEO -->
+    <meta property="og:title" content="News & Events | Gurukul Academy">
+    <meta property="og:description" content="Stay updated with the latest news, announcements, academic calendars, and upcoming events at Gurukul Academy. Reserve RSVP seats online.">
+    <meta property="og:type" content="website">
+    
+    <!-- Global Stylesheets (Preventing Cache Versioning) -->
+    <link rel="stylesheet" href="css/style.css?v=1780265501">
+    
+    <!-- Custom Page CSS Injected locally -->
+    
+    <style>
+        /* Search & Filter Controls */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            position: relative;
+            max-width: 400px;
+            width: 100%;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 48px;
+            border-radius: 30px;
+            background: var(--bg-white);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            font-size: 0.95rem;
+            color: var(--primary);
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+        body.dark-theme-active .search-input {
+            background: var(--bg-card-dark);
+            border-color: var(--glass-border);
+            color: var(--bg-white);
+        }
+        .search-input:focus {
+            border-color: var(--secondary-light);
+            box-shadow: var(--shadow-glow);
+        }
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        .news-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--primary);
+            background: rgba(15, 23, 42, 0.04);
+            transition: var(--transition-fast);
+        }
+        body.dark-theme-active .tab-btn {
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .tab-btn:hover {
+            color: var(--secondary-light);
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+            color: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Spotlight Feature Card */
+        .spotlight-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(15, 23, 42, 0.05);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: 50px;
+            position: relative;
+            transition: var(--transition-smooth);
+        }
+        body.dark-theme-active .spotlight-card {
+            background: var(--bg-card-dark);
+            border-color: var(--glass-border);
+        }
+        .spotlight-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .spotlight-media {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-light);
+            height: 100%;
+            min-height: 320px;
+            overflow: hidden;
+            position: relative;
+        }
+        .spotlight-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s var(--ease-premium);
+        }
+        .spotlight-card:hover .spotlight-img {
+            transform: scale(1.04);
+        }
+        .spotlight-content {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+        }
+        .news-badge {
+            align-self: flex-start;
+            background: var(--accent-glow);
+            color: var(--accent-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-family: var(--font-heading);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .news-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* News Grid Card */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 32px;
+        }
+        .news-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(15, 23, 42, 0.05);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+        }
+        body.dark-theme-active .news-card {
+            background: var(--bg-card-dark);
+            border-color: var(--glass-border);
+        }
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(13, 148, 136, 0.12);
+        }
+        .news-card-media {
+            height: 200px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-light);
+        }
+        .news-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s var(--ease-premium);
+        }
+        .news-card:hover .news-img {
+            transform: scale(1.06);
+        }
+        .news-card-content {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+        .news-card-content h4 {
+            font-size: 1.25rem;
+            line-height: 1.4;
+        }
+        .news-card-content p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+        .news-card-footer {
+            margin-top: auto;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .read-more {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--secondary-light);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+        .read-more:hover {
+            color: var(--accent-light);
+        }
+
+        /* RSVP Modal Overlay */
+        .rsvp-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(9, 13, 22, 0.90);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .rsvp-modal.active {
+            display: flex;
+        }
+        .rsvp-box {
+            background: var(--bg-white);
+            width: 90%;
+            max-width: 500px;
+            border-radius: var(--border-radius-lg);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        body.dark-theme-active .rsvp-box {
+            background: var(--bg-card-dark);
+            border-color: var(--glass-border);
+        }
+        .rsvp-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 2.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+            transition: var(--transition-fast);
+        }
+        .rsvp-close:hover {
+            color: var(--accent-light);
+        }
+        .rsvp-box h3 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        .rsvp-box p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+        .rsvp-success-message {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .rsvp-success-message svg {
+            color: var(--accent-light);
+            margin-bottom: 16px;
+        }
+        .rsvp-success-message h3 {
+            font-size: 1.7rem;
+            color: #ffffff !important;
+            margin-bottom: 8px;
+        }
+        .rsvp-success-message p {
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        /* Pagination style elements */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .pagination-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.04);
+            border: 1px solid transparent;
+            color: var(--primary);
+            font-family: var(--font-heading);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        body.dark-theme-active .pagination-btn {
+            background: rgba(255, 255, 255, 0.04);
+            color: #cbd5e1;
+        }
+        .pagination-btn:hover {
+            background: rgba(13, 148, 136, 0.1);
+            color: var(--secondary-light);
+        }
+        .pagination-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+        body.dark-theme-active .pagination-btn.active {
+            background: var(--accent);
+        }
+        .pagination-nav-btn {
+            width: auto;
+            padding: 0 18px;
+            border-radius: 30px;
+        }
+        .pagination-btn.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 992px) {
+            .spotlight-card {
+                grid-template-columns: 1fr;
+            }
+            .spotlight-content {
+                padding: 32px;
+            }
+        }
+
+        /* Navbar dynamic overloads */
+        .header .logo, 
+        .header .logo span, 
+        .header .nav-link, 
+        .header .theme-toggle {
+            color: #FFFFFF !important;
+        }
+        .header .menu-trigger span {
+            background-color: #FFFFFF !important;
+        }
+        .header.scrolled .logo, 
+        .header.scrolled .logo span, 
+        .header.scrolled .nav-link, 
+        .header.scrolled .theme-toggle {
+            color: #0B1E4F !important;
+        }
+        .header.scrolled .theme-toggle {
+            background: rgba(11, 30, 79, 0.05) !important;
+        }
+        .header.scrolled .menu-trigger span {
+            background-color: #0B1E4F !important;
+        }
+        body.dark-theme-active .header .logo, 
+        body.dark-theme-active .header .logo span, 
+        body.dark-theme-active .header .nav-link, 
+        body.dark-theme-active .header .theme-toggle,
+        body.dark-theme-active .header.scrolled .logo, 
+        body.dark-theme-active .header.scrolled .logo span, 
+        body.dark-theme-active .header.scrolled .nav-link, 
+        body.dark-theme-active .header.scrolled .theme-toggle {
+            color: #FFFFFF !important;
+        }
+        body.dark-theme-active .header .theme-toggle,
+        body.dark-theme-active .header.scrolled .theme-toggle {
+            color: var(--accent-light) !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
+        body.dark-theme-active .header .menu-trigger span,
+        body.dark-theme-active .header.scrolled .menu-trigger span {
+            background-color: #FFFFFF !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress"></div>
+
+    <!-- Page Preloader Loading Animation -->
+    <div id="page-preloader">
+        <div class="preloader-content">
+            <div class="preloader-crest">G</div>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Page Transition Shutter -->
+    <div class="page-shutter"></div>
+
+    <!-- BACK TO TOP BUTTON -->
+    <div class="back-to-top" id="back-to-top" title="Scroll back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 15-6-6-6 6"/>
+        </svg>
+    </div>
+
+    <!-- MAIN RESPONSIVE HEADER -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">G</div>
+                <span>Gurukul</span>
+            </a>
+            
+            <!-- Desktop navigation menu links -->
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link ">Home</a>
+                <a href="about.html" class="nav-link ">About Us</a>
+                <a href="gallery.html" class="nav-link ">Gallery</a>
+                <a href="news.html" class="nav-link active">News & Events</a>
+                <a href="results.html" class="nav-link ">Results</a>
+                <a href="contact.html" class="nav-link ">Contact Us</a>
+            </nav>
+            
+            <div class="header-actions">
+                <!-- Theme Toggle Button -->
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon loaded by JavaScript -->
+                </button>
+                <a href="contact.html#admissions" class="btn btn-primary">Enroll Now</a>
+                
+                <!-- Hamburger Trigger for mobile -->
+                <button class="menu-trigger" id="menu-trigger" aria-label="Toggle mobile navigation menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE DRAWER NAVIGATION -->
+    <div class="mobile-drawer" id="mobile-drawer">
+        <div class="drawer-links">
+            <a href="index.html" class="drawer-link ">Home</a>
+            <a href="about.html" class="drawer-link ">About Us</a>
+            <a href="gallery.html" class="drawer-link ">Gallery</a>
+            <a href="news.html" class="drawer-link active">News & Events</a>
+            <a href="results.html" class="drawer-link ">Results</a>
+            <a href="contact.html" class="drawer-link ">Contact Us</a>
+        </div>
+        <div class="drawer-actions">
+            <a href="contact.html#admissions" class="btn btn-primary">Enroll Now</a>
+            <a href="contact.html" class="btn btn-secondary">Inquire Now</a>
+        </div>
+    </div>
+
+    <main>
+        <!-- PAGE HERO -->
+        <section class="page-hero">
+            <div class="parallax-layer parallax-glow-1"></div>
+            <div class="parallax-layer parallax-glow-2"></div>
+            
+            <div class="container page-hero-container">
+                <h1 class="reveal">Academy News & Bulletins</h1>
+                <div class="breadcrumbs reveal" style="transition-delay: 0.1s;">
+                    <a href="index.html">Home</a>
+                    <span>/</span>
+                    <span class="current">News & Events</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: FEATURED SPOTLIGHT BANNER -->
+        <section class="section-padding" style="padding-bottom: 0;">
+            <div class="container">
+                            </div>
+        </section>
+
+        <!-- SECTION 2: ARCHIVES LISTINGS (WITH SEARCH & TABS PAGINATION) -->
+        <section class="section-padding">
+            <div class="container">
+                <!-- Controls: Search & Tabs -->
+                <div class="controls-row reveal">
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="news-search" placeholder="Search articles or events...">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    </div>
+                    
+                    <div class="news-tabs">
+                        <button class="tab-btn active" data-tab="all">All Bulletins</button>
+                        <button class="tab-btn" data-tab="academics">Academic Updates</button>
+                        <button class="tab-btn" data-tab="campus">Campus Events</button>
+                        <button class="tab-btn" data-tab="achieve">Achievements</button>
+                    </div>
+                </div>
+
+                <!-- Archives Grid Loop -->
+                                    <div style="text-align: center; padding: 48px;" class="reveal">
+                        <p style="color: var(--text-muted); font-size: 1.15rem;">No bulletins listed yet. Check back soon for announcements!</p>
+                    </div>
+                
+                <!-- PAGINATION CONTROLS -->
+                <div class="pagination-container" id="pagination-controls"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- RSVP MOCKUP DIALOG MODAL -->
+    <div class="rsvp-modal" id="rsvp-modal">
+        <div class="rsvp-box">
+            <span class="rsvp-close" id="rsvp-close">&times;</span>
+            
+            <div id="rsvp-form-container">
+                <h3>Event RSVP Reservation</h3>
+                <p>Register to secure your attendee entry seat for: <strong id="rsvp-event-name">Event</strong>.</p>
+                
+                <form id="rsvp-mock-form">
+                    <div class="form-group">
+                        <label class="form-label" for="rsvp-name">Full Name</label>
+                        <input type="text" id="rsvp-name" class="form-field" placeholder="Enter your name" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="rsvp-email">Email Address</label>
+                        <input type="email" id="rsvp-email" class="form-field" placeholder="Enter your email" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="rsvp-count">Number of Attendees</label>
+                        <select id="rsvp-count" class="form-field">
+                            <option value="1">1 Person</option>
+                            <option value="2">2 Persons</option>
+                            <option value="3">3 Persons</option>
+                            <option value="4">4+ Persons</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-accent" style="width: 100%; margin-top: 10px;">Submit Reservation</button>
+                </form>
+            </div>
+
+            <!-- Success Overlay -->
+            <div class="rsvp-success-message" id="rsvp-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <h3>RSVP Confirmed!</h3>
+                <p>We have successfully registered your seats. An entry invitation code and campus routing directions have been sent to your email.</p>
+                <button class="btn btn-secondary" id="rsvp-success-close" style="margin-top: 15px;">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Local Script for Instant Archives Filters & RSVP Modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initNewsControls();
+            initRsvpModal();
+        });
+
+        // 1. Instant Client-Side Search, Categorized Tabs Filter & Dynamic Pagination Engine
+        function initNewsControls() {
+            const searchInput = document.getElementById('news-search');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const newsCards = Array.from(document.querySelectorAll('.news-card'));
+            const paginationContainer = document.getElementById('pagination-controls');
+
+            const itemsPerPage = 4;
+            let currentPage = 1;
+            let filteredCards = [...newsCards];
+
+            const renderPagination = () => {
+                if (!paginationContainer) return;
+                paginationContainer.innerHTML = '';
+                const totalItems = filteredCards.length;
+                
+                if (totalItems === 0) {
+                    paginationContainer.innerHTML = '<p style="color: var(--text-muted); font-size: 1.1rem; grid-column: 1/-1; text-align: center; margin-top: 20px; width: 100%;">No articles or events match your criteria.</p>';
+                    return;
+                }
+
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                if (totalPages <= 1) return; // Hide pagination if only 1 page
+
+                // 1. Prev Button
+                const prevBtn = document.createElement('button');
+                prevBtn.className = `pagination-btn pagination-nav-btn ${currentPage === 1 ? 'disabled' : ''}`;
+                prevBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="m15 18-6-6 6-6"/></svg>
+                    Prev
+                `;
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.addEventListener('click', () => changePage(currentPage - 1));
+                paginationContainer.appendChild(prevBtn);
+
+                // 2. Number Buttons
+                for (let i = 1; i <= totalPages; i++) {
+                    const numBtn = document.createElement('button');
+                    numBtn.className = `pagination-btn ${currentPage === i ? 'active' : ''}`;
+                    numBtn.textContent = i;
+                    numBtn.addEventListener('click', () => changePage(i));
+                    paginationContainer.appendChild(numBtn);
+                }
+
+                // 3. Next Button
+                const nextBtn = document.createElement('button');
+                nextBtn.className = `pagination-btn pagination-nav-btn ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextBtn.innerHTML = `
+                    Next
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;"><path d="m9 18 6-6-6-6"/></svg>
+                `;
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.addEventListener('click', () => changePage(currentPage + 1));
+                paginationContainer.appendChild(nextBtn);
+            };
+
+            const displayItems = () => {
+                const totalItems = filteredCards.length;
+                
+                // Hide all cards first
+                newsCards.forEach(card => {
+                    card.style.display = 'none';
+                    card.classList.remove('active');
+                });
+
+                if (totalItems === 0) return;
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+
+                for (let i = startIndex; i < endIndex; i++) {
+                    const card = filteredCards[i];
+                    if (card) {
+                        card.style.display = 'flex';
+                        setTimeout(() => {
+                            card.classList.add('active');
+                        }, 50);
+                    }
+                }
+            };
+
+            const changePage = (page) => {
+                currentPage = page;
+                displayItems();
+                renderPagination();
+
+                const controlsElement = document.querySelector('.controls-row');
+                if (controlsElement) {
+                    const offset = 120;
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = controlsElement.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            };
+
+            const filterAndSearch = () => {
+                const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                const activeTabBtn = document.querySelector('.tab-btn.active');
+                const activeTab = activeTabBtn ? activeTabBtn.getAttribute('data-tab') : 'all';
+
+                filteredCards = newsCards.filter(card => {
+                    const cardType = card.getAttribute('data-type');
+                    const title = card.querySelector('h4').textContent.toLowerCase();
+                    const desc = card.querySelector('p').textContent.toLowerCase();
+
+                    const matchesTab = (activeTab === 'all' || cardType === activeTab);
+                    const matchesSearch = (title.includes(searchVal) || desc.includes(searchVal));
+
+                    return matchesTab && matchesSearch;
+                });
+
+                currentPage = 1;
+                displayItems();
+                renderPagination();
+            };
+
+            if (searchInput) searchInput.addEventListener('input', filterAndSearch);
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filterAndSearch();
+                });
+            });
+
+            filterAndSearch();
+        }
+
+        // 2. RSVP Interactive Modal Controls
+        function initRsvpModal() {
+            const modal = document.getElementById('rsvp-modal');
+            const closeBtn = document.getElementById('rsvp-close');
+            const successCloseBtn = document.getElementById('rsvp-success-close');
+            const formContainer = document.getElementById('rsvp-form-container');
+            const successOverlay = document.getElementById('rsvp-success');
+            const mockForm = document.getElementById('rsvp-mock-form');
+            const eventLabel = document.getElementById('rsvp-event-name');
+
+            document.querySelectorAll('.btn-rsvp').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const eventName = btn.getAttribute('data-event');
+                    if (eventLabel) eventLabel.textContent = eventName;
+                    
+                    if (formContainer) formContainer.style.display = 'block';
+                    if (successOverlay) successOverlay.style.display = 'none';
+                    if (mockForm) mockForm.reset();
+
+                    if (modal) modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            const closeModal = () => {
+                if (modal) modal.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (successCloseBtn) successCloseBtn.addEventListener('click', closeModal);
+
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal();
+                });
+            }
+
+            if (mockForm) {
+                mockForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (formContainer) formContainer.style.display = 'none';
+                    if (successOverlay) successOverlay.style.display = 'block';
+                });
+            }
+        }
+    </script>
+
+    <!-- ==========================================
+       FOOTER SECTION
+       ========================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">G</div>
+                        <span>Gurukul</span>
+                    </a>
+                    <p>Fusing traditional value ethics with advanced STEM methodologies to nurture global, creative, and enlightened leaders of tomorrow.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-btn" aria-label="Facebook">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </a>
+                        <a href="#" class="social-btn" aria-label="Twitter">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                        </a>
+                        <a href="#" class="social-btn" aria-label="LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                        <a href="#" class="social-btn" aria-label="YouTube">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z"/><polygon points="9.7 15 9.7 9 15 12 9.7 15"/></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <div class="footer-links">
+                        <div class="footer-link-item"><a href="index.html">Home Dashboard</a></div>
+                        <div class="footer-link-item"><a href="about.html">About Heritage</a></div>
+                        <div class="footer-link-item"><a href="gallery.html">Visual Gallery</a></div>
+                        <div class="footer-link-item"><a href="news.html">News & Bulletins</a></div>
+                        <div class="footer-link-item"><a href="results.html">Wall of Glory</a></div>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Contact Info</h4>
+                    <div class="contact-info-list">
+                        <div class="contact-info-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>Knowledge Park III, Greater Noida, UP, India</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span>+91 98765 43210</span>
+                        </div>
+                        <div class="contact-info-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                            <span>info@gurukul.edu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="footer-year"></span> Gurukul Academy. All Rights Reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Sitemap</a>
+                    <!-- Secure small, professional Admin Login link in the footer alongside terms -->
+                    <a href="admin/login.php" style="color: var(--accent-light); font-weight: 600;">Admin Login</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Dynamic Premium JavaScript Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>
