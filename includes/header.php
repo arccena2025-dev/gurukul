@@ -45,7 +45,9 @@ function is_nav_active($file, $current) {
     <!-- Page Preloader Loading Animation -->
     <div id="page-preloader">
         <div class="preloader-content">
-            <div class="preloader-crest">G</div>
+            <div class="preloader-crest" style="background: #FFFFFF; padding: 5px; border-radius: 50%; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+                <img src="/images/Logo%20PNG.png" alt="Gurukul Crest" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+            </div>
             <div class="preloader-spinner"></div>
         </div>
     </div>
