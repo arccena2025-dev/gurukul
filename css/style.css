@@ -237,19 +237,24 @@ body.dark-theme-active p {
     background: transparent;
 }
 
-/* Header Scrolled States */
+/* Header Scrolled States - Premium Floating Glass Pill */
 .header.scrolled {
     height: var(--header-shrink-height);
-    background: rgba(255, 255, 255, 0.90);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: var(--shadow-sm);
-    border-bottom: 1px solid var(--glass-border-light);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 10px 30px rgba(13, 148, 136, 0.08), var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: calc(100% - 48px);
+    max-width: var(--max-width);
+    top: 15px;
+    border-radius: 40px;
 }
 
 body.dark-theme-active .header.scrolled {
-    background: var(--glass-bg); /* rgba(15, 23, 42, 0.75) */
-    border-bottom: 1px solid var(--glass-border);
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), var(--shadow-lg);
 }
 
 .header-container {
