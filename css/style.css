@@ -262,6 +262,7 @@ body.dark-theme-active .header.scrolled {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    position: relative;
 }
 
 /* Elegant Premium Logo */
@@ -315,6 +316,9 @@ body.dark-theme-active .header.scrolled {
     display: flex;
     align-items: center;
     gap: 32px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .nav-link {
