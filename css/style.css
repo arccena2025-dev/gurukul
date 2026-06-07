@@ -226,7 +226,8 @@ body.dark-theme-active p {
 .header {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
     height: var(--header-height);
     z-index: 1000;
