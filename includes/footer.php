@@ -92,6 +92,70 @@ if (isset($pdo)) {
         </div>
     </footer>
 
+    <!-- ==========================================
+       CERTIFICATE PDF Viewer Modal Overlay
+       ========================================== -->
+    <div class="cert-modal-overlay" id="cert-modal-overlay" aria-hidden="true" role="dialog">
+        <div class="cert-modal-container">
+            <div class="cert-modal-header">
+                <h3 class="cert-modal-title" id="cert-modal-title">Document Viewer</h3>
+                <button class="cert-modal-close" id="cert-modal-close" aria-label="Close modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="cert-modal-body">
+                <div class="cert-modal-viewer">
+                    <iframe id="cert-modal-iframe" src="" frameborder="0" title="PDF Document Viewer"></iframe>
+                    <div class="cert-modal-fallback" id="cert-modal-fallback" style="display: none;">
+                        <div class="fallback-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <p>Mobile web browsers do not support direct PDF embedding. Click below to view the file directly.</p>
+                        <a id="cert-modal-download-fallback" href="#" class="btn btn-primary" target="_blank" download>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            View & Download PDF
+                        </a>
+                    </div>
+                </div>
+                <div class="cert-modal-info">
+                    <h4>Document Registry Details</h4>
+                    <div class="cert-info-grid">
+                        <div class="cert-info-item">
+                            <span class="info-label">Issuing Authority</span>
+                            <span class="info-value" id="cert-info-authority">-</span>
+                        </div>
+                        <div class="cert-info-item">
+                            <span class="info-label">Document Number</span>
+                            <span class="info-value" id="cert-info-number">-</span>
+                        </div>
+                        <div class="cert-info-item">
+                            <span class="info-label">Issue Date</span>
+                            <span class="info-value" id="cert-info-issue">-</span>
+                        </div>
+                        <div class="cert-info-item">
+                            <span class="info-label">Expiry / Renewal</span>
+                            <span class="info-value" id="cert-info-expiry">-</span>
+                        </div>
+                    </div>
+                    <div class="cert-modal-actions">
+                        <a id="cert-modal-download" href="#" class="btn btn-primary btn-download" target="_blank" download>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                            </svg>
+                            Download PDF File
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Dynamic Premium JavaScript Scripts -->
     <script src="js/main.js"></script>
 </body>

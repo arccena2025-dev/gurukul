@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Global Floating Label System
     initFloatingLabels();
+
+    // Initialize Certificates & Mandatory Disclosure System
+    initDisclosureMenu();
 });
 
 /**
@@ -431,6 +434,167 @@ function initFloatingLabels() {
         setTimeout(checkValue, 100);
         setTimeout(checkValue, 500);
     });
+}
+
+/**
+ * 13. CERTIFICATES & MANDATORY DISCLOSURE ACCESS SYSTEM
+ */
+function initDisclosureMenu() {
+    const disclosureItem = document.querySelector('.disclosure-nav-item');
+    const trigger = disclosureItem ? disclosureItem.querySelector('.dropdown-trigger') : null;
+    
+    // Keyboard/click accessibility for desktop dropdown
+    if (disclosureItem && trigger) {
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const expanded = trigger.getAttribute('aria-expanded') === 'true';
+            trigger.setAttribute('aria-expanded', !expanded);
+            disclosureItem.classList.toggle('menu-open');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!disclosureItem.contains(e.target)) {
+                trigger.setAttribute('aria-expanded', 'false');
+                disclosureItem.classList.remove('menu-open');
+            }
+        });
+    }
+
+    // Mobile Accordion Toggle
+    const accordionTrigger = document.querySelector('.drawer-accordion-trigger');
+    const accordionItem = document.querySelector('.drawer-accordion-item');
+    if (accordionTrigger && accordionItem) {
+        accordionTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            accordionItem.classList.toggle('active');
+        });
+    }
+
+    // PDF Viewer Modal Controller
+    const modalOverlay = document.getElementById('cert-modal-overlay');
+    const modalTitle = document.getElementById('cert-modal-title');
+    const modalIframe = document.getElementById('cert-modal-iframe');
+    const modalFallback = document.getElementById('cert-modal-fallback');
+    const fallbackDownload = document.getElementById('cert-modal-download-fallback');
+    const modalDownload = document.getElementById('cert-modal-download');
+    
+    const infoAuthority = document.getElementById('cert-info-authority');
+    const infoNumber = document.getElementById('cert-info-number');
+    const infoIssue = document.getElementById('cert-info-issue');
+    const infoExpiry = document.getElementById('cert-info-expiry');
+    const modalClose = document.getElementById('cert-modal-close');
+
+    if (!modalOverlay) return;
+
+    const openModal = (data) => {
+        // Set basic details
+        modalTitle.textContent = data.title || 'Certificate / Public Disclosure';
+        
+        // Populate Metadata
+        infoAuthority.textContent = data.authority || 'N/A';
+        infoNumber.textContent = data.number || 'N/A';
+        
+        // Format dates
+        infoIssue.textContent = formatDate(data.issue);
+        infoExpiry.textContent = (data.expiry && data.expiry.trim() !== '') ? formatDate(data.expiry) : 'Permanent / Lifetime';
+        
+        // Set paths
+        const pdfUrl = data.pdf;
+        modalDownload.href = pdfUrl;
+        fallbackDownload.href = pdfUrl;
+        
+        // Handle Mobile Iframe Fallback (iOS/Android have issues viewing raw PDFs in iframes)
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            modalIframe.style.display = 'none';
+            modalFallback.style.display = 'flex';
+        } else {
+            modalIframe.style.display = 'block';
+            modalFallback.style.display = 'none';
+            modalIframe.src = pdfUrl;
+        }
+
+        // Show Modal
+        modalOverlay.classList.add('modal-active');
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden'; // Lock background scroll
+    };
+
+    const closeModal = () => {
+        modalOverlay.classList.remove('modal-active');
+        modalOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = ''; // Restore scroll
+        
+        // Reset src to stop loading PDF
+        setTimeout(() => {
+            modalIframe.src = '';
+        }, 300);
+    };
+
+    // Attach listeners to all click targets
+    const certTargets = document.querySelectorAll('.cert-card, .featured-badge, .drawer-cert-item');
+    certTargets.forEach(target => {
+        target.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Close mobile drawer if opening modal
+            const menuTrigger = document.getElementById('menu-trigger');
+            const mobileDrawer = document.getElementById('mobile-drawer');
+            if (mobileDrawer && mobileDrawer.classList.contains('active')) {
+                menuTrigger.classList.remove('active');
+                mobileDrawer.classList.remove('active');
+            }
+
+            const data = {
+                pdf: target.getAttribute('data-pdf'),
+                title: target.getAttribute('data-title'),
+                number: target.getAttribute('data-number'),
+                authority: target.getAttribute('data-authority'),
+                issue: target.getAttribute('data-issue'),
+                expiry: target.getAttribute('data-expiry')
+            };
+            openModal(data);
+        });
+    });
+
+    if (modalClose) {
+        modalClose.addEventListener('click', closeModal);
+    }
+
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key press
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('modal-active')) {
+            closeModal();
+        }
+    });
+}
+
+// Helper date formatter
+function formatDate(dateStr) {
+    if (!dateStr || dateStr.trim() === '' || dateStr === '0000-00-00') return 'N/A';
+    try {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const date = new Date(parts[0], parts[1] - 1, parts[2]);
+            if (!isNaN(date.getTime())) {
+                return date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+            }
+        }
+        return dateStr;
+    } catch (e) {
+        return dateStr;
+    }
 }
 
 

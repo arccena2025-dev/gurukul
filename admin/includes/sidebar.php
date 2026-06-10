@@ -101,7 +101,16 @@ function is_active($file, $current) {
             <span>Inquiry Center</span>
         </a>
         
-        <!-- 9. Security Profiles -->
+        <!-- 9. Certificates CMS -->
+        <a href="certificates.php" class="nav-item <?php echo is_active('certificates.php', $current_file); ?>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            <span>Certificates CMS</span>
+        </a>
+        
+        <!-- 10. Security Profiles -->
         <a href="profile.php" class="nav-item <?php echo is_active('profile.php', $current_file); ?>">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>

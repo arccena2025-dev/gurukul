@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS `gallery`;
 DROP TABLE IF EXISTS `news_events`;
 DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `contact_submissions`;
+DROP TABLE IF EXISTS `certificates`;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. ADMINISTRATORS TABLE
@@ -225,3 +226,36 @@ INSERT INTO `gallery_categories` (`id`, `name`, `slug`) VALUES
 (2, 'STEM Laboratories', 'laboratories'),
 (3, 'Athletic Fields', 'athletics'),
 (4, 'Performing Arts', 'arts');
+
+-- 11. CERTIFICATES & COMPLIANCE TABLE
+CREATE TABLE `certificates` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(255) NOT NULL,
+  `category` ENUM('recognition', 'safety', 'academic', 'awards', 'student_safety') NOT NULL,
+  `pdf_path` VARCHAR(255) NOT NULL,
+  `thumbnail_path` VARCHAR(255) DEFAULT NULL,
+  `issue_authority` VARCHAR(255) DEFAULT NULL,
+  `certificate_number` VARCHAR(100) DEFAULT NULL,
+  `issue_date` DATE DEFAULT NULL,
+  `expiry_date` DATE DEFAULT NULL,
+  `is_visible` TINYINT(1) DEFAULT 1,
+  `is_featured` TINYINT(1) DEFAULT 0,
+  `sort_order` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Seed default certificates & mandatory disclosures
+INSERT INTO `certificates` (`title`, `category`, `pdf_path`, `issue_authority`, `certificate_number`, `issue_date`, `expiry_date`, `is_visible`, `is_featured`, `sort_order`) VALUES
+('CBSE Affiliation Extension Certificate', 'recognition', 'uploads/certificates/cbse_affiliation.pdf', 'Central Board of Secondary Education', 'CBSE/AFF/330882/2025', '2025-04-01', '2030-03-31', 1, 1, 1),
+('School Recognition Certificate (Form V)', 'recognition', 'uploads/certificates/school_recognition.pdf', 'Department of School Education, Govt. of India', 'DSE/REC-2291/2024', '2024-06-15', NULL, 1, 0, 2),
+('No Objection Certificate (NOC)', 'recognition', 'uploads/certificates/noc_certificate.pdf', 'State Education Secretariat', 'SEC/NOC-992/2011', '2011-03-10', NULL, 1, 0, 3),
+('Society/Trust Registration Deed', 'recognition', 'uploads/certificates/trust_deed.pdf', 'Registrar of Societies & Trusts', 'REG/TRUST-8891-A', '2010-09-05', NULL, 1, 0, 4),
+('Structural Building Safety Certificate', 'safety', 'uploads/certificates/building_safety.pdf', 'Public Works Department (PWD) Engineers', 'PWD/STR-881/2026', '2026-01-12', '2029-01-11', 1, 0, 5),
+('Fire Safety & Prevention Certificate', 'safety', 'uploads/certificates/fire_safety.pdf', 'State Fire & Emergency Services', 'FIRE/SAFE-9902/2026', '2026-02-20', '2027-02-19', 1, 1, 6),
+('Water Health & Sanitation Certificate', 'safety', 'uploads/certificates/water_sanitation.pdf', 'Municipal Public Health Laboratory', 'MPH/SAN-7762/2026', '2026-03-05', '2027-03-04', 1, 1, 7),
+('Academic Fee Structure Matrix', 'academic', 'uploads/certificates/fee_structure.pdf', 'School Finance & Management Committee', 'SFC/FEE-2026-27', '2026-01-05', NULL, 1, 0, 8),
+('Annual Academic Calendar 2026-27', 'academic', 'uploads/certificates/academic_calendar.pdf', 'Academic Dean Office', 'AC/CAL-2026-27', '2026-03-01', '2027-03-31', 1, 0, 9),
+('School Management Committee (SMC) Registry', 'academic', 'uploads/certificates/smc_members.pdf', 'Board of Trustees Office', 'BOT/SMC-2026', '2026-01-10', NULL, 1, 0, 10),
+('Dynamic Staff Details & Ratios', 'academic', 'uploads/certificates/staff_details.pdf', 'HR Administration Office', 'HR/STAFF-2026', '2026-02-01', NULL, 1, 0, 11),
+('National Innovation School Excellence Award', 'awards', 'uploads/certificates/innovation_award.pdf', 'National STEM Foundation', 'NSF/AWARD-2025', '2025-11-14', NULL, 1, 0, 12),
+('Child Protection & Safety Policy', 'student_safety', 'uploads/certificates/child_protection.pdf', 'Student Welfare Council', 'SWC/CPP-2025', '2025-06-01', NULL, 1, 0, 13);
