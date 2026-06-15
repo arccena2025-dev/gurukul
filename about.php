@@ -808,6 +808,56 @@ $custom_css = '
         .faculty-card.hidden {
             display: none !important;
         }
+
+        /* Collapsible Faculty Section */
+        .faculty-collapsible-wrapper {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+        }
+        .faculty-collapsible-wrapper.expanded {
+            opacity: 1;
+        }
+        .faculty-toggle-btn {
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            color: var(--accent);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        body.dark-theme-active .faculty-toggle-btn {
+            background: rgba(255, 255, 255, 0.02);
+            color: var(--accent-light);
+        }
+        .faculty-toggle-btn:hover {
+            background: var(--accent);
+            color: var(--text-color-inverse) !important;
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+        body.dark-theme-active .faculty-toggle-btn:hover {
+            background: var(--accent-light);
+            color: #0b1e4f !important;
+            border-color: var(--accent-light);
+        }
+        .faculty-toggle-btn svg {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .faculty-toggle-btn.expanded svg {
+            transform: rotate(180deg);
+        }
     </style>
 ';
 
@@ -847,13 +897,13 @@ include_once 'includes/header.php';
                                 </svg>
                             <?php endif; ?>
                             <div class="intro-badge">
-                                <h4>23+</h4>
+                                <h4>7+</h4>
                                 <p>Years Legacy</p>
                             </div>
                         </div>
                     </div>
                     <div class="intro-content reveal reveal-right" style="transition-delay: 0.1s;">
-                        <span class="news-badge" style="background: rgba(13, 148, 136, 0.08); color: var(--secondary-light);">Established 2003</span>
+                        <span class="news-badge" style="background: rgba(13, 148, 136, 0.08); color: var(--secondary-light);">Established 2019</span>
                         <h2><?php echo htmlspecialchars($about['intro_heading'] ?? 'Fusing Heritage Values with Technical Innovation'); ?></h2>
                         <p><?php echo nl2br(htmlspecialchars($about['intro_desc_1'] ?? '')); ?></p>
                         <p><?php echo nl2br(htmlspecialchars($about['intro_desc_2'] ?? '')); ?></p>
@@ -1073,12 +1123,17 @@ include_once 'includes/header.php';
         <?php if (($about['show_faculty'] ?? 1) && !empty($faculties)): ?>
         <section class="section-padding faculty-section" style="background-color: rgba(15, 23, 42, 0.005); border-top: 1px solid var(--glass-border);">
             <div class="container">
-                <div class="section-title reveal">
+                <div class="section-title reveal" style="margin-bottom: 25px;">
                     <h2>Expert Faculty & Educators</h2>
                     <p>Fostering academic excellence, moral leadership, and logical thinking through experienced, subject-matter specialists.</p>
+                    <button class="faculty-toggle-btn" id="faculty-toggle-btn" aria-expanded="false" aria-controls="faculty-collapse-content">
+                        <span>Show Faculty Directory</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
                 </div>
 
-                <!-- Faculty Search and Filter Controls -->
+                <div class="faculty-collapsible-wrapper" id="faculty-collapse-content">
+                    <!-- Faculty Search and Filter Controls -->
                 <div class="faculty-controls reveal">
                     <div class="search-box-wrapper">
                         <input type="text" id="faculty-search-input" placeholder="Search faculty by name or subject..." class="form-control faculty-search">
@@ -1164,6 +1219,7 @@ include_once 'includes/header.php';
                 <div id="no-faculty-results" style="display: none; text-align: center; padding: 48px; background: rgba(255, 255, 255, 0.02); border-radius: var(--border-radius-sm); border: 1px dashed var(--glass-border); margin-top: 24px;">
                     <p style="color: var(--text-muted); font-size: 1.1rem; margin: 0;">No faculty members found matching your search criteria.</p>
                 </div>
+                </div>
             </div>
         </section>
         <?php endif; ?>
@@ -1171,7 +1227,48 @@ include_once 'includes/header.php';
         <script>
         document.addEventListener('DOMContentLoaded', () => {
             initFacultyFilters();
+            initFacultyCollapsible();
         });
+
+        function initFacultyCollapsible() {
+            const toggleBtn = document.getElementById('faculty-toggle-btn');
+            const collapseContent = document.getElementById('faculty-collapse-content');
+            
+            if (!toggleBtn || !collapseContent) return;
+            
+            toggleBtn.addEventListener('click', () => {
+                const isExpanded = toggleBtn.classList.contains('expanded');
+                
+                if (!isExpanded) {
+                    // Expand
+                    toggleBtn.classList.add('expanded');
+                    toggleBtn.querySelector('span').textContent = 'Hide Faculty Directory';
+                    toggleBtn.setAttribute('aria-expanded', 'true');
+                    
+                    collapseContent.classList.add('expanded');
+                    collapseContent.style.maxHeight = collapseContent.scrollHeight + 'px';
+                    
+                    // Allow auto-adjust of height after transition completes for filters & search
+                    setTimeout(() => {
+                        if (toggleBtn.classList.contains('expanded')) {
+                            collapseContent.style.maxHeight = 'none';
+                        }
+                    }, 500);
+                } else {
+                    // Collapse
+                    toggleBtn.classList.remove('expanded');
+                    toggleBtn.querySelector('span').textContent = 'Show Faculty Directory';
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    
+                    collapseContent.style.maxHeight = collapseContent.scrollHeight + 'px';
+                    // Force reflow
+                    collapseContent.offsetHeight;
+                    
+                    collapseContent.classList.remove('expanded');
+                    collapseContent.style.maxHeight = '0px';
+                }
+            });
+        }
 
         function initFacultyFilters() {
             const searchInput = document.getElementById('faculty-search-input');
