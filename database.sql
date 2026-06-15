@@ -205,7 +205,7 @@ VALUES (1,
 -- Seed default about page layout parameters
 INSERT INTO `about_content` (`id`, `intro_desc_1`, `intro_desc_2`, `vision_desc`, `mission_desc`, `philosophy_desc`, `leadership_quote`)
 VALUES (1,
-'Established in 2011, Gurukul Academy has risen to stand as one of the nation\'s premier institutions of learning. We bridge ancient Gurukul ethics with cutting-edge 21st-century STEM frameworks.',
+'Established in 2003, Gurukul Academy has risen to stand as one of the nation\'s premier institutions of learning. We bridge ancient Gurukul ethics with cutting-edge 21st-century STEM frameworks.',
 'Our expansive campus features elite interactive classrooms, highly equipped research laboratories, high-performance athletic arenas, and a library system holding thousands of educational records. We serve to groom comprehensive global leaders.',
 'To be a globally recognized beacon of holistic education, where academic brilliance blends with ethical leadership to build enlightened human resources for the future.',
 'To provide a nurturing environment that fosters scientific inquiry, critical problem-solving skills, and a commitment to positive civic action, ensuring every student discovers their path.',
@@ -214,7 +214,7 @@ VALUES (1,
 
 -- Seed default timeline milestones
 INSERT INTO `about_timeline` (`milestone_year`, `milestone_title`, `milestone_desc`, `sort_order`) VALUES
-('2011', 'The Foundation Stone', 'Gurukul Academy opened its doors with a simple dream of transforming education, starting with 120 primary grade scholars.', 1),
+('2003', 'The Foundation Stone', 'Gurukul Academy opened its doors with a simple dream of transforming education, starting with 120 primary grade scholars.', 1),
 ('2015', 'CBSE Accreditation & Laboratories', 'Secured official CBSE Secondary Board accreditation, opening high-fidelity Physics, Chemistry, and Biological research halls.', 2),
 ('2019', 'Elite STEM robotics laboratory wing', 'Launched the National Robotics and Fabrication center, bagging first rank accolades at the National STEM Championship.', 3),
 ('2022', 'Olympic Sports & Hostel Facilities', 'Unveiled our indoor Olympic-sized sports complex alongside modern, air-conditioned boarding suites.', 4),

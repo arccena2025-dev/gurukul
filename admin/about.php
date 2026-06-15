@@ -633,7 +633,7 @@ if (!in_array($active_tab, ['general', 'timeline', 'leadership'])) {
                 <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.01); padding: 12px 18px; border-radius: var(--border-radius-sm); border: 1px solid var(--glass-border);">
                     <div>
                         <h4 style="color: #ffffff; margin-bottom: 2px;">Chronological Milestones Timeline</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted);">Displays the alternating center-lined history milestones (2011 to 2026)</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Displays the alternating center-lined history milestones (2003 to 2026)</p>
                     </div>
                     <label class="switch-control">
                         <input type="checkbox" name="show_timeline" value="1" <?php if ($about['show_timeline'] == 1) echo 'checked'; ?>>
@@ -676,7 +676,7 @@ if (!in_array($active_tab, ['general', 'timeline', 'leadership'])) {
             
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="milestone_year">Milestone Year (e.g. 2011)</label>
+                    <label for="milestone_year">Milestone Year (e.g. 2003)</label>
                     <input type="text" name="milestone_year" id="milestone_year" class="form-control" placeholder="Enter year" required>
                 </div>
                 <div class="form-group">

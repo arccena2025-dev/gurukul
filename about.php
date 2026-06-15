@@ -752,13 +752,13 @@ include_once 'includes/header.php';
                                 </svg>
                             <?php endif; ?>
                             <div class="intro-badge">
-                                <h4>15+</h4>
+                                <h4>23+</h4>
                                 <p>Years Legacy</p>
                             </div>
                         </div>
                     </div>
                     <div class="intro-content reveal reveal-right" style="transition-delay: 0.1s;">
-                        <span class="news-badge" style="background: rgba(13, 148, 136, 0.08); color: var(--secondary-light);">Established 2011</span>
+                        <span class="news-badge" style="background: rgba(13, 148, 136, 0.08); color: var(--secondary-light);">Established 2003</span>
                         <h2><?php echo htmlspecialchars($about['intro_heading'] ?? 'Fusing Heritage Values with Technical Innovation'); ?></h2>
                         <p><?php echo nl2br(htmlspecialchars($about['intro_desc_1'] ?? '')); ?></p>
                         <p><?php echo nl2br(htmlspecialchars($about['intro_desc_2'] ?? '')); ?></p>

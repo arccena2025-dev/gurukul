@@ -911,7 +911,7 @@ include_once 'includes/header.php';
                     <div class="about-preview-grid">
                         <div class="about-media reveal reveal-left">
                             <div class="about-badge">
-                                <h4>15+</h4>
+                                <h4>23+</h4>
                                 <p>Years Legacy</p>
                             </div>
                             <div class="about-illustration">

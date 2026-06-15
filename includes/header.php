@@ -152,7 +152,7 @@ if (isset($pdo)) {
                                             </div>
                                             <div class="profile-meta-item">
                                                 <span class="meta-label">Established:</span>
-                                                <span class="meta-value">2011</span>
+                                                <span class="meta-value">2003</span>
                                             </div>
                                             <div class="profile-meta-item">
                                                 <span class="meta-label">Status:</span>
