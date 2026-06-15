@@ -536,7 +536,7 @@ function initDisclosureMenu() {
     };
 
     // Attach listeners to all click targets
-    const certTargets = document.querySelectorAll('.cert-card, .featured-badge, .drawer-cert-item');
+    const certTargets = document.querySelectorAll('.cert-card, .featured-badge, .drawer-cert-item, .footer-cert-link');
     certTargets.forEach(target => {
         target.addEventListener('click', (e) => {
             e.preventDefault();

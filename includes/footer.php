@@ -11,11 +11,17 @@ $foot_phone   = '+91 98765 43210';
 $foot_email   = 'info@gurukul.edu';
 $foot_address = 'Knowledge Park III, Greater Noida, UP, India';
 
+$footer_certs = [];
 if (isset($pdo)) {
     try {
         $stmt_foot = $pdo->prepare("SELECT `leadership_author` FROM `about_content` WHERE `id` = 1 LIMIT 1");
         $stmt_foot->execute();
         $foot_data = $stmt_foot->fetch();
+        
+        // Fetch visible certificates of recognition & safety categories for footer list
+        $stmt_foot_certs = $pdo->prepare("SELECT * FROM `certificates` WHERE `is_visible` = 1 AND `category` IN ('recognition', 'safety') ORDER BY `sort_order` ASC");
+        $stmt_foot_certs->execute();
+        $footer_certs = $stmt_foot_certs->fetchAll();
     } catch (PDOException $e) {
         // Safe silent fail
     }
@@ -57,6 +63,29 @@ if (isset($pdo)) {
                         <div class="footer-link-item"><a href="gallery.php">Visual Gallery</a></div>
                         <div class="footer-link-item"><a href="news.php">News & Bulletins</a></div>
                         <div class="footer-link-item"><a href="results.php">Wall of Glory</a></div>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Mandatory Disclosures</h4>
+                    <div class="footer-links">
+                        <?php if (empty($footer_certs)): ?>
+                            <div class="footer-link-item"><a href="#">No Certificates Loaded</a></div>
+                        <?php else: ?>
+                            <?php foreach ($footer_certs as $fc): ?>
+                                <div class="footer-link-item">
+                                    <a href="#" class="footer-cert-link" 
+                                       data-pdf="<?php echo sanitize($fc['pdf_path']); ?>" 
+                                       data-title="<?php echo sanitize($fc['title']); ?>" 
+                                       data-number="<?php echo sanitize($fc['certificate_number']); ?>" 
+                                       data-authority="<?php echo sanitize($fc['issue_authority']); ?>" 
+                                       data-issue="<?php echo sanitize($fc['issue_date']); ?>" 
+                                       data-expiry="<?php echo sanitize($fc['expiry_date']); ?>">
+                                        <?php echo sanitize($fc['title']); ?>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 
