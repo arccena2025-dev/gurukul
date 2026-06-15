@@ -9,12 +9,14 @@ DROP TABLE IF EXISTS `media`;
 DROP TABLE IF EXISTS `homepage_content`;
 DROP TABLE IF EXISTS `about_content`;
 DROP TABLE IF EXISTS `about_timeline`;
+DROP TABLE IF EXISTS `about_leadership`;
 DROP TABLE IF EXISTS `gallery_categories`;
 DROP TABLE IF EXISTS `gallery`;
 DROP TABLE IF EXISTS `news_events`;
 DROP TABLE IF EXISTS `results`;
 DROP TABLE IF EXISTS `contact_submissions`;
 DROP TABLE IF EXISTS `certificates`;
+DROP TABLE IF EXISTS `faculty`;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. ADMINISTRATORS TABLE
@@ -130,6 +132,18 @@ CREATE TABLE `about_timeline` (
   `sort_order` INT DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 5B. LEADERSHIP & ADVISORS TABLE
+CREATE TABLE `about_leadership` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `designation` VARCHAR(255) NOT NULL,
+  `message` TEXT DEFAULT NULL,
+  `profile_description` TEXT DEFAULT NULL,
+  `image_path` VARCHAR(255) DEFAULT NULL,
+  `sort_order` INT DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 6. GALLERY CATEGORIES TABLE
 CREATE TABLE `gallery_categories` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -221,6 +235,14 @@ INSERT INTO `about_timeline` (`milestone_year`, `milestone_title`, `milestone_de
 ('2022', 'Olympic Sports & Hostel Facilities', 'Unveiled our indoor Olympic-sized sports complex alongside modern, air-conditioned boarding suites.', 4),
 ('2026', 'Academic Wall of Glory Landmark', 'Celebrating a milestone legacy of over 1200+ elite alumni selected inside premium IITs, AIIMS, and global research centers.', 5);
 
+-- Seed default about leadership
+INSERT INTO `about_leadership` (`name`, `designation`, `message`, `profile_description`, `image_path`, `sort_order`) VALUES
+('Dr.Mrs. Vineeta R.Dhakane', 'President', 'Welcome to Gurukul Academy. Our mission is to cultivate scholastic brilliance alongside high moral principles, preparing students for impactful global citizenship.', 'President of Gurukul Academy, steering the institution\'s strategic vision, educational policies, and excellence standards.', NULL, 1),
+('Dr.Mr. Rajendra N. Dhakane', 'Secretary', 'At Gurukul, we prioritize conceptual learning, analytical independence, and social responsibility to transform young minds into ethical leaders.', 'Secretary of Gurukul Academy, overseeing administrative execution, regulatory compliances, and academic operations.', NULL, 2),
+('Mr. Akhilesh Dhakane', 'Executive Director', 'Our focus is to synthesize standard pedagogical rigor with modern technological skills and outdoor learning, empowering students for the future.', 'Executive Director of Gurukul Group Of Schools, Beed. Orchestrating curriculum innovations, athletic expansions, and technological progress across all campuses.', NULL, 3),
+('Rutuja Gadiwan', 'Principal', '“The purpose of education is not only to create successful students but responsible and compassionate citizens.”', 'M.Sc, B.Ed with over 16 years of academic expertise in educational leadership, strategic planning, and student development.', 'uploads/faculty/principal_rutuja_ma_am.jpg', 4),
+('Sharmila Kishor Patil', 'Vice Principal', 'Education is not the filling of a pail but the lighting of a fire.', 'B.A, B.Ed with 23 years of teaching experience, focusing on simple and playful language learning.', 'uploads/faculty/sharmila_ma_am.jpg', 5);
+
 -- Seed default gallery categories
 INSERT INTO `gallery_categories` (`id`, `name`, `slug`) VALUES
 (1, 'Academic Pillars', 'academics'),
@@ -283,18 +305,6 @@ CREATE TABLE `faculty` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `faculty` (`name`, `designation`, `qualification`, `subject`, `experience`, `expertise`, `meaning_of_education`, `teaching_philosophy`, `student_message`, `quote`, `image_path`, `sort_order`) VALUES
-('Rutuja Gadiwan', 'Prinicpal', 'B.Ed, M.Sc', 'Maths', '16 years', 'Educational leadership,Strategic planning,Student Development,Administration and Operations', 'To me, education is much more than academic achievement. It is the process of nurturing young minds, developing character, fostering critical thinking, and preparing students to become responsible, compassionate, and capable members of society. As a principal, I view education as a lifelong journey that empowers individuals with knowledge, skills, values, and confidence to succeed in an ever-changing world.', 'My teaching philosophy is rooted in the belief that every student has the ability to learn, grow, and succeed when provided with the right support, opportunities, and encouragement. Education should inspire curiosity, critical thinking, creativity, and a lifelong love of learning.', 'Dear Students,
-
-Each one of you has unique talents, dreams, and potential. Believe in yourselves, work hard, and never be afraid to ask questions or make mistakes—they are an important part of learning and growth.
-
-Education is not only about achieving good grades; it is about developing character, values, confidence, and the skills needed to make a positive difference in the world. Be curious, be kind, respect others, and always strive to be the best version of yourself.
-
-Remember, success comes through dedication, perseverance, and a willingness to learn every day. Your teachers and I are here to support and guide you on this journey.
-
-Dream big, stay focused, and never stop learning. The future is full of opportunities, and I am confident that each of you can achieve great things.
-
-Wishing you happiness, success, and a wonderful learning experience.', '“The purpose of education is not only to create successful students but responsible and compassionate citizens.”', 'uploads/faculty/principal_rutuja_ma_am.jpg', 1),
-('Sharmila Kishor Patil', 'Vice Principal', 'B.Ed, B.A', 'English', '23 years', 'Learning playful and simple.', 'Change and lifelong process of learning.', 'Problem solvers and lifelong learners.', 'Always remember that true success is built on continuous learning.', 'Education is not the filling of a pill but the lighting of a fire.', 'uploads/faculty/sharmila_ma_am.jpg', 2),
 ('Pooja Shamrao Dangare', 'Class Co-ordinator', 'D.Ed, B.Ed, B.A, M.A', 'English', '10 Years', 'English', 'Education shapes the world.', 'Basic concepts of subjects and social value should be teach by teachers.', 'Never give up in life.We should always try in life nature gives us 100% fruits.', 'There are two options make progress or make excuses......', 'uploads/faculty/pooja_ma_am.jpg', 3),
 ('Anuradha Dinkarao Nandurakar', 'Teacher', 'M.Sc, B.Ed', 'Maths', '1Years', 'Algebra, Geometry, Calculus and Problem Solving', 'Education is life long process of learning', 'Make mathematics simple and engaging, and helping students to develop strong problem solving skills', 'Maths is not about numbers but its about the way to see life with numbers', 'Language of life is Maths', NULL, 4),
 ('Ashtavinayak Vishwanath Shenkude', 'Teacher', 'A.T.D Arts, G.D. Arts', 'Drawing, Art n Craft', '7 Years', 'Portraits', 'Education is new Revoluation', 'My teaching philosophy is to inspire creativity, encourage self-expression,and help every student learn with confidence', 'mathematics is not about being perfect; it is about learning to think, reason, and solve problems. Be patient with yourself, ask questions, and enjoy the journey of learning.', 'Information is not knowledge', 'uploads/faculty/ashtavinayak_sir.jpg', 5),
