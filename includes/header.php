@@ -144,15 +144,15 @@ if (isset($pdo)) {
                                         <div class="profile-meta-list">
                                             <div class="profile-meta-item">
                                                 <span class="meta-label">CBSE Affiliation:</span>
-                                                <span class="meta-value">330882</span>
+                                                <span class="meta-value">1131304</span>
                                             </div>
                                             <div class="profile-meta-item">
                                                 <span class="meta-label">School Code:</span>
-                                                <span class="meta-value">65882</span>
+                                                <span class="meta-value">31291</span>
                                             </div>
                                             <div class="profile-meta-item">
                                                 <span class="meta-label">Established:</span>
-                                                <span class="meta-value">2010</span>
+                                                <span class="meta-value">2011</span>
                                             </div>
                                             <div class="profile-meta-item">
                                                 <span class="meta-label">Status:</span>
@@ -291,8 +291,8 @@ if (isset($pdo)) {
                 </button>
                 <div class="drawer-accordion-content">
                     <div class="drawer-school-details">
-                        <p><strong>CBSE Affiliation:</strong> 330882</p>
-                        <p><strong>School Code:</strong> 65882</p>
+                        <p><strong>CBSE Affiliation:</strong> 1131304</p>
+                        <p><strong>School Code:</strong> 31291</p>
                         <p class="trust-info">Managed by Gurukul Educational Trust</p>
                     </div>
                     

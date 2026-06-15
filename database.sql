@@ -246,7 +246,7 @@ CREATE TABLE `certificates` (
 
 -- Seed default certificates & mandatory disclosures
 INSERT INTO `certificates` (`title`, `category`, `pdf_path`, `issue_authority`, `certificate_number`, `issue_date`, `expiry_date`, `is_visible`, `is_featured`, `sort_order`) VALUES
-('CBSE Affiliation Extension Certificate', 'recognition', 'uploads/certificates/cbse_affiliation.pdf', 'Central Board of Secondary Education', 'CBSE/AFF/330882/2025', '2025-04-01', '2030-03-31', 1, 1, 1),
+('CBSE Affiliation Extension Certificate', 'recognition', 'uploads/certificates/cbse_affiliation.pdf', 'Central Board of Secondary Education', 'CBSE/AFF/1131304/2025', '2025-04-01', '2030-03-31', 1, 1, 1),
 ('School Recognition Certificate (Form V)', 'recognition', 'uploads/certificates/school_recognition.pdf', 'Department of School Education, Govt. of India', 'DSE/REC-2291/2024', '2024-06-15', NULL, 0, 0, 2),
 ('No Objection Certificate (NOC)', 'recognition', 'uploads/certificates/noc_certificate.pdf', 'State Education Secretariat', 'SEC/NOC-992/2011', '2011-03-10', NULL, 1, 0, 3),
 ('Society/Trust Registration Deed', 'recognition', 'uploads/certificates/trust_deed.pdf', 'Registrar of Societies & Trusts', 'REG/TRUST-8891-A', '2010-09-05', NULL, 0, 0, 4),
