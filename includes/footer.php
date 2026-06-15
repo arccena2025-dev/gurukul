@@ -9,7 +9,7 @@
 // Or fallback to default constants to prevent page breaks
 $foot_phone   = '+91 98765 43210';
 $foot_email   = 'info@gurukul.edu';
-$foot_address = 'Knowledge Park III, Greater Noida, UP, India';
+$foot_address = '2QR6+4MF, Beed Bypass Rd, Shidode, Maharashtra 431153';
 
 $footer_certs = [];
 if (isset($pdo)) {

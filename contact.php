@@ -538,7 +538,7 @@ include_once 'includes/header.php';
                     <!-- Left: Styled Map Container -->
                     <div class="map-container">
                         <iframe 
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14013.91617454203!2d77.37890623253503!3d28.585392473461413!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ceff135555555%3A0x6b45a6c38cccd28b!2sKnowledge%20Park%2C%20Noida%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1717000000000!5m2!1sen!2sin" 
+                            src="https://maps.google.com/maps?q=2QR6%2B4MF%2C%20Beed%20Bypass%20Rd%2C%20Shidode%2C%20Maharashtra%20431153&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=&amp;output=embed" 
                             width="100%" 
                             height="100%" 
                             style="border:0;" 
@@ -560,7 +560,7 @@ include_once 'includes/header.php';
                             </div>
                             <div>
                                 <strong>Physical Address</strong>
-                                <p style="margin: 0; font-size: 0.9rem;">12, Academic Boulevard, Knowledge Park, Gurukul Hills</p>
+                                <p style="margin: 0; font-size: 0.9rem;">2QR6+4MF, Beed Bypass Rd, Shidode, Maharashtra 431153</p>
                             </div>
                         </div>
 
