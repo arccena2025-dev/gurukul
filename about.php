@@ -26,8 +26,13 @@ try {
     $stmt_leaders = $pdo->prepare("SELECT * FROM `about_leadership` ORDER BY `sort_order` ASC, `id` ASC");
     $stmt_leaders->execute();
     $leaders = $stmt_leaders->fetchAll();
+
+    // Fetch dynamic faculty profiles
+    $stmt_faculty = $pdo->prepare("SELECT * FROM `faculty` ORDER BY `sort_order` ASC, `id` ASC");
+    $stmt_faculty->execute();
+    $faculties = $stmt_faculty->fetchAll();
 } catch (PDOException $e) {
-    die("CMS Critical Render Error: Database connectivity failure.");
+    die("CMS Critical Render Error: Database connectivity failure. " . $e->getMessage());
 }
 
 // 3. Inject custom local stylesheet blocks in the header
@@ -713,6 +718,96 @@ $custom_css = '
         body.dark-theme-active .header.scrolled .menu-trigger span {
             background-color: #FFFFFF !important;
         }
+
+        /* ==========================================
+           FACULTY DIRECTORY CONTROLS
+           ========================================== */
+        .faculty-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+            align-items: center;
+        }
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+        .faculty-search {
+            width: 100%;
+            padding: 12px 20px 12px 48px !important;
+            border-radius: 30px !important;
+            border: 1px solid var(--glass-border) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+            color: var(--text-color) !important;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        body.dark-theme-active .faculty-search {
+            background: rgba(255, 255, 255, 0.01) !important;
+            color: #ffffff !important;
+        }
+        .faculty-search:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15) !important;
+            outline: none;
+        }
+        .search-box-wrapper .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+        .faculty-search:focus + .search-icon {
+            color: var(--accent);
+        }
+        .faculty-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body.dark-theme-active .filter-btn {
+            background: rgba(255, 255, 255, 0.01);
+            color: var(--text-muted);
+        }
+        .filter-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .filter-btn.active {
+            background: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: var(--text-color-inverse) !important;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
+        }
+        body.dark-theme-active .filter-btn.active {
+            background: var(--accent-light) !important;
+            border-color: var(--accent-light) !important;
+            color: #0b1e4f !important;
+        }
+        .faculty-card {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .faculty-card.hidden {
+            display: none !important;
+        }
     </style>
 ';
 
@@ -973,6 +1068,165 @@ include_once 'includes/header.php';
             </div>
         </section>
         <?php endif; ?>
+
+        <!-- SECTION 4B: EXPERT FACULTY DIRECTORY -->
+        <?php if (($about['show_faculty'] ?? 1) && !empty($faculties)): ?>
+        <section class="section-padding faculty-section" style="background-color: rgba(15, 23, 42, 0.005); border-top: 1px solid var(--glass-border);">
+            <div class="container">
+                <div class="section-title reveal">
+                    <h2>Expert Faculty & Educators</h2>
+                    <p>Fostering academic excellence, moral leadership, and logical thinking through experienced, subject-matter specialists.</p>
+                </div>
+
+                <!-- Faculty Search and Filter Controls -->
+                <div class="faculty-controls reveal">
+                    <div class="search-box-wrapper">
+                        <input type="text" id="faculty-search-input" placeholder="Search faculty by name or subject..." class="form-control faculty-search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-icon" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </div>
+                    
+                    <div class="faculty-filters">
+                        <button class="filter-btn active" data-filter="all">All Faculty</button>
+                        <button class="filter-btn" data-filter="maths">Mathematics</button>
+                        <button class="filter-btn" data-filter="science">Science</button>
+                        <button class="filter-btn" data-filter="languages">Languages</button>
+                        <button class="filter-btn" data-filter="social">Social Sciences</button>
+                        <button class="filter-btn" data-filter="pre-primary">Pre-Primary</button>
+                        <button class="filter-btn" data-filter="others">Others</button>
+                    </div>
+                </div>
+
+                <!-- Faculty Members Grid -->
+                <div class="mentor-grid faculty-grid">
+                    <?php 
+                    $delay_idx = 0;
+                    foreach ($faculties as $fac): 
+                        $delay = ($delay_idx % 4) * 0.05;
+                        $delay_idx++;
+                        
+                        // Map subject to filter categories
+                        $sub = strtolower($fac['subject'] ?? '');
+                        $des = strtolower($fac['designation'] ?? '');
+                        
+                        $category = 'others';
+                        if (strpos($sub, 'math') !== false || strpos($sub, 'alg') !== false || strpos($sub, 'geom') !== false) {
+                            $category = 'maths';
+                        } elseif (strpos($sub, 'sci') !== false || strpos($sub, 'phys') !== false || strpos($sub, 'chem') !== false || strpos($sub, 'bio') !== false) {
+                            $category = 'science';
+                        } elseif (strpos($sub, 'eng') !== false || strpos($sub, 'marath') !== false || strpos($sub, 'hind') !== false || strpos($sub, 'lang') !== false) {
+                            $category = 'languages';
+                        } elseif (strpos($sub, 'social') !== false || strpos($sub, 's.st') !== false || strpos($sub, 'hist') !== false || strpos($sub, 'geo') !== false || strpos($sub, 'pol') !== false) {
+                            $category = 'social';
+                        } elseif (strpos($sub, 'pre-primary') !== false || strpos($des, 'pre-primary') !== false || strpos($sub, 'nursery') !== false || strpos($sub, 'kg') !== false) {
+                            $category = 'pre-primary';
+                        }
+                    ?>
+                    <div class="mentor-card faculty-card reveal" 
+                         style="transition-delay: <?php echo $delay; ?>s;"
+                         data-name="<?php echo strtolower(sanitize($fac['name'])); ?>"
+                         data-subject="<?php echo strtolower(sanitize($fac['subject'])); ?>"
+                         data-category="<?php echo $category; ?>">
+                        <div class="mentor-photo-wrapper" style="overflow: hidden;">
+                            <?php if (!empty($fac['image_path'])): ?>
+                                <img src="<?php echo htmlspecialchars($fac['image_path']); ?>" style="width: 100%; height: 100%; object-fit: cover;" alt="<?php echo htmlspecialchars($fac['name']); ?>">
+                            <?php else: ?>
+                                <svg class="mentor-photo-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 35%; height: auto; margin: auto; display: block; padding-top: 20px; color: var(--text-muted);">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            <?php endif; ?>
+                        </div>
+                        <div class="mentor-info">
+                            <div class="mentor-role">
+                                <?php echo htmlspecialchars($fac['designation']); ?>
+                                <?php if (!empty($fac['subject'])): ?>
+                                    — <?php echo htmlspecialchars($fac['subject']); ?>
+                                <?php endif; ?>
+                            </div>
+                            <h3><?php echo htmlspecialchars($fac['name']); ?></h3>
+                            <?php if (!empty($fac['qualification'])): ?>
+                                <div class="mentor-qualification" style="font-size: 0.8rem; color: var(--accent-light); font-weight: 600; margin-bottom: 6px;"><?php echo htmlspecialchars($fac['qualification']); ?></div>
+                            <?php endif; ?>
+                            <?php if (!empty($fac['experience'])): ?>
+                                <div class="mentor-experience" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">Experience: <?php echo htmlspecialchars($fac['experience']); ?></div>
+                            <?php endif; ?>
+                            <?php if (!empty($fac['quote']) || !empty($fac['teaching_philosophy'])): ?>
+                                <p class="mentor-bio" style="font-style: italic; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                                    "<?php echo htmlspecialchars($fac['quote'] ?: $fac['teaching_philosophy']); ?>"
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <!-- Zero Search Results State -->
+                <div id="no-faculty-results" style="display: none; text-align: center; padding: 48px; background: rgba(255, 255, 255, 0.02); border-radius: var(--border-radius-sm); border: 1px dashed var(--glass-border); margin-top: 24px;">
+                    <p style="color: var(--text-muted); font-size: 1.1rem; margin: 0;">No faculty members found matching your search criteria.</p>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initFacultyFilters();
+        });
+
+        function initFacultyFilters() {
+            const searchInput = document.getElementById('faculty-search-input');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const facultyCards = document.querySelectorAll('.faculty-card');
+            const noResults = document.getElementById('no-faculty-results');
+
+            if (!searchInput || facultyCards.length === 0) return;
+
+            let currentFilter = 'all';
+            let searchQuery = '';
+
+            function filterFaculty() {
+                let visibleCount = 0;
+
+                facultyCards.forEach(card => {
+                    const name = card.getAttribute('data-name') || '';
+                    const subject = card.getAttribute('data-subject') || '';
+                    const category = card.getAttribute('data-category') || '';
+
+                    const matchesSearch = name.includes(searchQuery) || subject.includes(searchQuery);
+                    const matchesFilter = currentFilter === 'all' || category === currentFilter;
+
+                    if (matchesSearch && matchesFilter) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
+                }
+            }
+
+            // Search input handler
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                filterFaculty();
+            });
+
+            // Filter button handlers
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.getAttribute('data-filter') || 'all';
+                    filterFaculty();
+                });
+            });
+        }
+        </script>
 
         <!-- SECTION 7: CALL TO ACTION -->
         <?php if ($about['show_cta']): ?>

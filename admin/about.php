@@ -58,6 +58,53 @@ function upload_image_asset($file_key, $prefix = 'about_') {
     return ['status' => false, 'error' => "Failed to save uploaded image."];
 }
 
+/**
+ * Reusable Faculty Image Upload Helper (uploads to uploads/faculty/)
+ */
+function upload_faculty_photo($file_key, $prefix = 'faculty_') {
+    global $pdo;
+    if (!isset($_FILES[$file_key]) || $_FILES[$file_key]['error'] !== UPLOAD_ERR_OK) {
+        return ['status' => false, 'error' => null];
+    }
+    
+    $file_tmp = $_FILES[$file_key]['tmp_name'];
+    $file_name = sanitize($_FILES[$file_key]['name']);
+    $file_size = $_FILES[$file_key]['size'];
+    $file_type = $_FILES[$file_key]['type'];
+    
+    $ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    $allowed_exts = ['jpg', 'jpeg', 'png', 'svg', 'webp'];
+    
+    if (!in_array($ext, $allowed_exts)) {
+        return ['status' => false, 'error' => "Invalid file type. Only JPG, PNG, WEBP, and SVG formats allowed."];
+    }
+    if ($file_size > 5 * 1024 * 1024) {
+        return ['status' => false, 'error' => "File size exceeds the maximum limit of 5MB."];
+    }
+    
+    $upload_dir = '../uploads/faculty/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+    
+    $new_filename = uniqid($prefix, true) . '.' . $ext;
+    $target_path = $upload_dir . $new_filename;
+    $db_filepath = 'uploads/faculty/' . $new_filename;
+    
+    if (move_uploaded_file($file_tmp, $target_path)) {
+        $stmt_media = $pdo->prepare("INSERT INTO `media` (`filename`, `filepath`, `filetype`, `filesize`) VALUES (:filename, :filepath, :filetype, :filesize)");
+        $stmt_media->execute([
+            ':filename' => $file_name,
+            ':filepath' => $db_filepath,
+            ':filetype' => $file_type,
+            ':filesize' => $file_size
+        ]);
+        return ['status' => true, 'filepath' => $db_filepath];
+    }
+    
+    return ['status' => false, 'error' => "Failed to save uploaded image."];
+}
+
 // 1. Fetch current About Us general settings (Row id = 1)
 try {
     $stmt = $pdo->prepare("SELECT * FROM `about_content` WHERE `id` = 1 LIMIT 1");
@@ -105,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $show_achievements = isset($_POST['show_achievements']) ? 1 : 0;
         $show_timeline = isset($_POST['show_timeline']) ? 1 : 0;
         $show_cta = isset($_POST['show_cta']) ? 1 : 0;
+        $show_faculty = isset($_POST['show_faculty']) ? 1 : 0;
         
         $intro_image_path = $about['intro_image_path'];
         
@@ -146,7 +194,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     `show_leadership` = :show_leadership,
                     `show_achievements` = :show_achievements,
                     `show_timeline` = :show_timeline,
-                    `show_cta` = :show_cta
+                    `show_cta` = :show_cta,
+                    `show_faculty` = :show_faculty
                     WHERE `id` = 1");
                 
                 $update_stmt->execute([
@@ -174,7 +223,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     ':show_leadership' => $show_leadership,
                     ':show_achievements' => $show_achievements,
                     ':show_timeline' => $show_timeline,
-                    ':show_cta' => $show_cta
+                    ':show_cta' => $show_cta,
+                    ':show_faculty' => $show_faculty
                 ]);
                 
                 // Refresh local representation
@@ -197,12 +247,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $about['achievement_3_title'] = $achievement_3_title;
                 $about['achievement_3_metric'] = $achievement_3_metric;
                 $about['achievement_3_desc'] = $achievement_3_desc;
-                $about['show_intro'] = $show_intro;
+                 $about['show_intro'] = $show_intro;
                 $about['show_vision_mission'] = $show_vision_mission;
                 $about['show_leadership'] = $show_leadership;
                 $about['show_achievements'] = $show_achievements;
                 $about['show_timeline'] = $show_timeline;
                 $about['show_cta'] = $show_cta;
+                $about['show_faculty'] = $show_faculty;
                 
                 $success_msg = "About Us general content sections updated successfully.";
             } catch (PDOException $e) {
@@ -404,29 +455,154 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
     }
 }
 
-// 5. Fetch Milestones and Leaders for displaying
+// Handle POST Faculty Submit Actions (ADD, EDIT, DELETE)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array($_POST['action'], ['add_faculty', 'edit_faculty', 'delete_faculty'])) {
+    if (!isset($_POST['csrf_token']) || !validate_csrf_token($_POST['csrf_token'])) {
+        $error_msg = "Security token mismatch. Please try again.";
+    } else {
+        $action = $_POST['action'];
+        
+        // A. Add Faculty
+        if ($action === 'add_faculty') {
+            $name = trim($_POST['fac_name'] ?? '');
+            $designation = trim($_POST['fac_designation'] ?? '');
+            $qualification = trim($_POST['fac_qualification'] ?? '');
+            $subject = trim($_POST['fac_subject'] ?? '');
+            $experience = trim($_POST['fac_experience'] ?? '');
+            $expertise = trim($_POST['fac_expertise'] ?? '');
+            $meaning = trim($_POST['fac_meaning'] ?? '');
+            $philosophy = trim($_POST['fac_philosophy'] ?? '');
+            $message = trim($_POST['fac_message'] ?? '');
+            $quote = trim($_POST['fac_quote'] ?? '');
+            $sort_order = intval($_POST['sort_order'] ?? 0);
+            $image_path = null;
+            
+            $upload = upload_faculty_photo('fac_image', 'fac_');
+            if ($upload['status']) {
+                $image_path = $upload['filepath'];
+            } elseif ($upload['error']) {
+                $error_msg = $upload['error'];
+            }
+            
+            if (empty($name) || empty($designation)) {
+                $error_msg = "Please fill in Name and Designation.";
+            } elseif (empty($error_msg)) {
+                try {
+                    $add_stmt = $pdo->prepare("INSERT INTO `faculty` (`name`, `designation`, `qualification`, `subject`, `experience`, `expertise`, `meaning_of_education`, `teaching_philosophy`, `student_message`, `quote`, `image_path`, `sort_order`) VALUES (:name, :designation, :qualification, :subject, :experience, :expertise, :meaning, :philosophy, :message, :quote, :image_path, :sort_order)");
+                    $add_stmt->execute([
+                        ':name' => $name,
+                        ':designation' => $designation,
+                        ':qualification' => $qualification,
+                        ':subject' => $subject,
+                        ':experience' => $experience,
+                        ':expertise' => $expertise,
+                        ':meaning' => $meaning,
+                        ':philosophy' => $philosophy,
+                        ':message' => $message,
+                        ':quote' => $quote,
+                        ':image_path' => $image_path,
+                        ':sort_order' => $sort_order
+                    ]);
+                    $success_msg = "New faculty profile added successfully.";
+                } catch (PDOException $e) {
+                    $error_msg = "Faculty profile insertion failure: " . sanitize($e->getMessage());
+                }
+            }
+        }
+        
+        // B. Edit Faculty
+        if ($action === 'edit_faculty') {
+            $id = intval($_POST['fac_id'] ?? 0);
+            $name = trim($_POST['fac_name'] ?? '');
+            $designation = trim($_POST['fac_designation'] ?? '');
+            $qualification = trim($_POST['fac_qualification'] ?? '');
+            $subject = trim($_POST['fac_subject'] ?? '');
+            $experience = trim($_POST['fac_experience'] ?? '');
+            $expertise = trim($_POST['fac_expertise'] ?? '');
+            $meaning = trim($_POST['fac_meaning'] ?? '');
+            $philosophy = trim($_POST['fac_philosophy'] ?? '');
+            $message = trim($_POST['fac_message'] ?? '');
+            $quote = trim($_POST['fac_quote'] ?? '');
+            $sort_order = intval($_POST['sort_order'] ?? 0);
+            $image_path = $_POST['current_image_path'] ?? null;
+            
+            $upload = upload_faculty_photo('fac_image', 'fac_');
+            if ($upload['status']) {
+                $image_path = $upload['filepath'];
+            } elseif ($upload['error']) {
+                $error_msg = $upload['error'];
+            }
+            
+            if (empty($name) || empty($designation) || $id === 0) {
+                $error_msg = "Please fill in Name and Designation.";
+            } elseif (empty($error_msg)) {
+                try {
+                    $edit_stmt = $pdo->prepare("UPDATE `faculty` SET `name` = :name, `designation` = :designation, `qualification` = :qualification, `subject` = :subject, `experience` = :experience, `expertise` = :expertise, `meaning_of_education` = :meaning, `teaching_philosophy` = :philosophy, `student_message` = :message, `quote` = :quote, `image_path` = :image_path, `sort_order` = :sort_order WHERE `id` = :id");
+                    $edit_stmt->execute([
+                        ':name' => $name,
+                        ':designation' => $designation,
+                        ':qualification' => $qualification,
+                        ':subject' => $subject,
+                        ':experience' => $experience,
+                        ':expertise' => $expertise,
+                        ':meaning' => $meaning,
+                        ':philosophy' => $philosophy,
+                        ':message' => $message,
+                        ':quote' => $quote,
+                        ':image_path' => $image_path,
+                        ':sort_order' => $sort_order,
+                        ':id' => $id
+                    ]);
+                    $success_msg = "Faculty profile updated successfully.";
+                } catch (PDOException $e) {
+                    $error_msg = "Faculty profile modification failure: " . sanitize($e->getMessage());
+                }
+            }
+        }
+        
+        // C. Delete Faculty
+        if ($action === 'delete_faculty') {
+            $id = intval($_POST['fac_id'] ?? 0);
+            if ($id > 0) {
+                try {
+                    $del_stmt = $pdo->prepare("DELETE FROM `faculty` WHERE `id` = :id");
+                    $del_stmt->execute([':id' => $id]);
+                    $success_msg = "Faculty profile deleted successfully.";
+                } catch (PDOException $e) {
+                    $error_msg = "Faculty profile deletion failure: " . sanitize($e->getMessage());
+                }
+            }
+        }
+    }
+}
+
+// 5. Fetch Milestones, Leaders, and Faculty for displaying
 try {
     $timeline_stmt = $pdo->query("SELECT * FROM `about_timeline` ORDER BY `sort_order` ASC, `milestone_year` ASC");
     $milestones = $timeline_stmt->fetchAll();
     
     $leadership_stmt = $pdo->query("SELECT * FROM `about_leadership` ORDER BY `sort_order` ASC, `id` ASC");
     $leaders = $leadership_stmt->fetchAll();
+
+    $faculty_stmt = $pdo->query("SELECT * FROM `faculty` ORDER BY `sort_order` ASC, `id` ASC");
+    $faculties = $faculty_stmt->fetchAll();
 } catch (PDOException $e) {
     die("Database Listing Fetch Failure: " . sanitize($e->getMessage()));
 }
 
 $token = generate_csrf_token();
 $active_tab = $_GET['tab'] ?? 'general';
-if (!in_array($active_tab, ['general', 'timeline', 'leadership'])) {
+if (!in_array($active_tab, ['general', 'timeline', 'leadership', 'faculty'])) {
     $active_tab = 'general';
 }
 ?>
 
 <!-- Tab switcher structure for CMS categories -->
-<div style="display: flex; gap: 16px; margin-bottom: 28px; border-bottom: 1px solid var(--glass-border); padding-bottom: 1px;">
+<div style="display: flex; gap: 16px; margin-bottom: 28px; border-bottom: 1px solid var(--glass-border); padding-bottom: 1px; flex-wrap: wrap;">
     <button class="btn-action <?php echo ($active_tab === 'general') ? 'btn-theme' : 'btn-outline'; ?>" onclick="window.location.href='about.php?tab=general'" style="border-radius: 4px 4px 0 0; padding: 12px 24px; font-size: 0.95rem;">General CMS Settings</button>
     <button class="btn-action <?php echo ($active_tab === 'timeline') ? 'btn-theme' : 'btn-outline'; ?>" onclick="window.location.href='about.php?tab=timeline'" style="border-radius: 4px 4px 0 0; padding: 12px 24px; font-size: 0.95rem;">Timeline Milestones (<?php echo count($milestones); ?>)</button>
     <button class="btn-action <?php echo ($active_tab === 'leadership') ? 'btn-theme' : 'btn-outline'; ?>" onclick="window.location.href='about.php?tab=leadership'" style="border-radius: 4px 4px 0 0; padding: 12px 24px; font-size: 0.95rem;">Leadership Profiles (<?php echo count($leaders); ?>)</button>
+    <button class="btn-action <?php echo ($active_tab === 'faculty') ? 'btn-theme' : 'btn-outline'; ?>" onclick="window.location.href='about.php?tab=faculty'" style="border-radius: 4px 4px 0 0; padding: 12px 24px; font-size: 0.95rem;">Faculty Profiles (<?php echo count($faculties); ?>)</button>
 </div>
 
 <!-- Action Feedback Alerts -->
@@ -648,6 +824,17 @@ if (!in_array($active_tab, ['general', 'timeline', 'leadership'])) {
                     </div>
                     <label class="switch-control">
                         <input type="checkbox" name="show_cta" value="1" <?php if ($about['show_cta'] == 1) echo 'checked'; ?>>
+                        <span class="slider-toggle"></span>
+                    </label>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.01); padding: 12px 18px; border-radius: var(--border-radius-sm); border: 1px solid var(--glass-border);">
+                    <div>
+                        <h4 style="color: #ffffff; margin-bottom: 2px;">Faculty Profiles Directory Section</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Displays the dynamic faculty grid section filterable by subject/designation</p>
+                    </div>
+                    <label class="switch-control">
+                        <input type="checkbox" name="show_faculty" value="1" <?php if (($about['show_faculty'] ?? 1) == 1) echo 'checked'; ?>>
                         <span class="slider-toggle"></span>
                     </label>
                 </div>
@@ -1055,6 +1242,276 @@ if (!in_array($active_tab, ['general', 'timeline', 'leadership'])) {
         }
         function closeEditLeaderModal() {
             const modal = document.getElementById('edit-leader-modal');
+            modal.style.display = 'none';
+        }
+    </script>
+<?php elseif ($active_tab === 'faculty'): ?>
+    <!-- 1. Form to Add a New Faculty Profile -->
+    <div class="dashboard-block">
+        <div class="block-title">
+            <h3>Add New Faculty Profile</h3>
+        </div>
+        <form action="about.php?tab=faculty" method="POST" enctype="multipart/form-data" autocomplete="off">
+            <input type="hidden" name="action" value="add_faculty">
+            <input type="hidden" name="csrf_token" value="<?php echo $token; ?>">
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="fac_name">Full Name</label>
+                    <input type="text" name="fac_name" id="fac_name" class="form-control" placeholder="e.g. Anuradha Dinkarao Nandurakar" required>
+                </div>
+                <div class="form-group">
+                    <label for="fac_designation">Designation</label>
+                    <input type="text" name="fac_designation" id="fac_designation" class="form-control" placeholder="e.g. Teacher, Co-ordinator" required>
+                </div>
+                <div class="form-group">
+                    <label for="fac_qualification">Qualification</label>
+                    <input type="text" name="fac_qualification" id="fac_qualification" class="form-control" placeholder="e.g. M.Sc, B.Ed">
+                </div>
+                <div class="form-group">
+                    <label for="fac_subject">Subject (Optional)</label>
+                    <input type="text" name="fac_subject" id="fac_subject" class="form-control" placeholder="e.g. Maths, Science, Languages">
+                </div>
+                <div class="form-group">
+                    <label for="fac_experience">Experience</label>
+                    <input type="text" name="fac_experience" id="fac_experience" class="form-control" placeholder="e.g. 5 Years">
+                </div>
+                <div class="form-group">
+                    <label for="fac_sort_order">Sort Order Index</label>
+                    <input type="number" name="sort_order" id="fac_sort_order" class="form-control" value="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="fac_expertise">Area of Expertise (Optional)</label>
+                <textarea name="fac_expertise" id="fac_expertise" class="form-control" placeholder="Enter key strengths, domains..."></textarea>
+            </div>
+            
+            <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="form-group">
+                    <label for="fac_meaning">Meaning of Education (Optional)</label>
+                    <textarea name="fac_meaning" id="fac_meaning" class="form-control" placeholder="What education means to them..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="fac_philosophy">Teaching Philosophy (Optional)</label>
+                    <textarea name="fac_philosophy" id="fac_philosophy" class="form-control" placeholder="Their teaching approach..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="form-group">
+                    <label for="fac_message">Student Message (Optional)</label>
+                    <textarea name="fac_message" id="fac_message" class="form-control" placeholder="Words of advice for students..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="fac_quote">Inspirational Quote (Optional)</label>
+                    <textarea name="fac_quote" id="fac_quote" class="form-control" placeholder="Their favorite quote..."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Profile Photograph (Optional)</label>
+                <div class="file-upload-wrapper" style="padding: 16px;">
+                    <input type="file" name="fac_image" class="file-upload-input">
+                    <div class="file-upload-info" style="font-size: 0.85rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <span>Choose Photograph (Allowed: JPG, PNG, WEBP)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-action btn-theme">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg>
+                <span>Add Faculty Profile</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- 2. Active Faculty Profiles list table -->
+    <div class="dashboard-block">
+        <div class="block-title">
+            <h3>Active Faculty Directory</h3>
+        </div>
+        
+        <?php if (empty($faculties)): ?>
+            <p style="color: var(--text-muted); text-align: center; padding: 24px;">No faculty profiles registered yet.</p>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Photo</th>
+                            <th>Name & Designation</th>
+                            <th>Qualifications</th>
+                            <th>Experience</th>
+                            <th style="text-align: right;">Action Overrides</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($faculties as $fac): ?>
+                            <tr>
+                                <td style="width: 70px; text-align: center;"><strong><?php echo intval($fac['sort_order']); ?></strong></td>
+                                <td style="width: 80px;">
+                                    <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;">
+                                        <?php if (!empty($fac['image_path'])): ?>
+                                            <img src="../<?php echo $fac['image_path']; ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <?php else: ?>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong style="font-size: 1rem; color: #ffffff; display: block;"><?php echo sanitize($fac['name']); ?></strong>
+                                    <span style="font-size: 0.8rem; color: var(--accent-light); font-weight: 600; text-transform: uppercase;">
+                                        <?php echo sanitize($fac['designation']); ?>
+                                        <?php if (!empty($fac['subject'])): ?>
+                                            — <?php echo sanitize($fac['subject']); ?>
+                                        <?php endif; ?>
+                                    </span>
+                                </td>
+                                <td style="font-size: 0.85rem; color: #e2e8f0;"><?php echo !empty($fac['qualification']) ? sanitize($fac['qualification']) : '<span style="opacity:0.3;">N/A</span>'; ?></td>
+                                <td style="font-size: 0.85rem; color: #e2e8f0;"><?php echo !empty($fac['experience']) ? sanitize($fac['experience']) : '<span style="opacity:0.3;">N/A</span>'; ?></td>
+                                <td style="text-align: right; width: 180px;">
+                                    <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                        <button class="btn-action btn-outline" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 4px;" onclick="openEditFacultyModal(<?php echo htmlspecialchars(json_encode($fac)); ?>)">Edit</button>
+                                        
+                                        <form action="about.php?tab=faculty" method="POST" onsubmit="return confirm('Are you sure you want to remove this faculty profile?');" style="display: inline;">
+                                            <input type="hidden" name="action" value="delete_faculty">
+                                            <input type="hidden" name="csrf_token" value="<?php echo $token; ?>">
+                                            <input type="hidden" name="fac_id" value="<?php echo $fac['id']; ?>">
+                                            <button type="submit" class="btn-action btn-danger" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 4px;">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- 3. Faculty Profile Edit Modal Overlay -->
+    <div id="edit-faculty-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; overflow-y: auto; padding: 40px 16px; box-sizing: border-box; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+        <div class="dashboard-block" style="width: 100%; max-width: 700px; margin: 0 auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+            <div class="block-title">
+                <h3>Edit Faculty Profile</h3>
+                <button onclick="closeEditFacultyModal()" class="btn-action btn-outline" style="padding: 4px 10px; border-radius: var(--border-radius-circle); font-size: 0.8rem;">X</button>
+            </div>
+            <form action="about.php?tab=faculty" method="POST" enctype="multipart/form-data" autocomplete="off">
+                <input type="hidden" name="action" value="edit_faculty">
+                <input type="hidden" name="csrf_token" value="<?php echo $token; ?>">
+                <input type="hidden" name="fac_id" id="edit_fac_id" value="">
+                <input type="hidden" name="current_image_path" id="edit_fac_current_image_path" value="">
+                
+                <div class="form-grid-modal">
+                    <div class="form-group">
+                        <label for="edit_fac_name">Full Name</label>
+                        <input type="text" name="fac_name" id="edit_fac_name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_fac_designation">Designation</label>
+                        <input type="text" name="fac_designation" id="edit_fac_designation" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_fac_qualification">Qualification</label>
+                        <input type="text" name="fac_qualification" id="edit_fac_qualification" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_fac_subject">Subject</label>
+                        <input type="text" name="fac_subject" id="edit_fac_subject" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_fac_experience">Experience</label>
+                        <input type="text" name="fac_experience" id="edit_fac_experience" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_fac_sort_order">Sort Order Index</label>
+                        <input type="number" name="sort_order" id="edit_fac_sort_order" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_fac_expertise">Area of Expertise (Optional)</label>
+                    <textarea name="fac_expertise" id="edit_fac_expertise" class="form-control"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_fac_meaning">Meaning of Education (Optional)</label>
+                    <textarea name="fac_meaning" id="edit_fac_meaning" class="form-control"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_fac_philosophy">Teaching Philosophy (Optional)</label>
+                    <textarea name="fac_philosophy" id="edit_fac_philosophy" class="form-control"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_fac_message">Student Message (Optional)</label>
+                    <textarea name="fac_message" id="edit_fac_message" class="form-control"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_fac_quote">Inspirational Quote (Optional)</label>
+                    <textarea name="fac_quote" id="edit_fac_quote" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Replace Profile Photograph (Optional)</label>
+                    <div class="modal-image-row">
+                        <div id="edit-faculty-img-preview" class="modal-image-row-preview" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center;">
+                            <!-- Populated dynamically via modal JS -->
+                        </div>
+                        <div class="modal-image-row-upload">
+                            <div class="file-upload-wrapper" style="padding: 12px;">
+                                <input type="file" name="fac_image" class="file-upload-input">
+                                <div class="file-upload-info" style="font-size: 0.8rem;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span>Upload new photograph</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions-row">
+                    <button type="button" class="btn-action btn-outline" onclick="closeEditFacultyModal()">Cancel</button>
+                    <button type="submit" class="btn-action btn-theme">Save Faculty changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script facilitating Faculty Modal toggle -->
+    <script>
+        function openEditFacultyModal(fac) {
+            document.getElementById('edit_fac_id').value = fac.id;
+            document.getElementById('edit_fac_name').value = fac.name;
+            document.getElementById('edit_fac_designation').value = fac.designation;
+            document.getElementById('edit_fac_qualification').value = fac.qualification || '';
+            document.getElementById('edit_fac_subject').value = fac.subject || '';
+            document.getElementById('edit_fac_experience').value = fac.experience || '';
+            document.getElementById('edit_fac_sort_order').value = fac.sort_order;
+            document.getElementById('edit_fac_expertise').value = fac.expertise || '';
+            document.getElementById('edit_fac_meaning').value = fac.meaning_of_education || '';
+            document.getElementById('edit_fac_philosophy').value = fac.teaching_philosophy || '';
+            document.getElementById('edit_fac_message').value = fac.student_message || '';
+            document.getElementById('edit_fac_quote').value = fac.quote || '';
+            document.getElementById('edit_fac_current_image_path').value = fac.image_path || '';
+            
+            const previewBox = document.getElementById('edit-faculty-img-preview');
+            if (fac.image_path) {
+                previewBox.innerHTML = `<img src="../${fac.image_path}" style="width:100%;height:100%;object-fit:cover;">`;
+            } else {
+                previewBox.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.4;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+            }
+            
+            const modal = document.getElementById('edit-faculty-modal');
+            modal.style.display = 'block';
+        }
+        function closeEditFacultyModal() {
+            const modal = document.getElementById('edit-faculty-modal');
             modal.style.display = 'none';
         }
     </script>
