@@ -69,10 +69,38 @@ if (isset($pdo)) {
                 <div class="footer-col">
                     <h4>Mandatory Disclosures</h4>
                     <div class="footer-links">
-                        <?php if (empty($footer_certs)): ?>
-                            <div class="footer-link-item"><a href="#">No Certificates Loaded</a></div>
+                        <!-- Group 1: Affiliation & NOC -->
+                        <div class="footer-sub-group-title" style="font-family: var(--font-heading); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-light); margin: 8px 0 6px; letter-spacing: 0.05em;">Affiliation & NOC</div>
+                        <?php 
+                        $rec_certs = array_filter($footer_certs, function($c) { return $c['category'] === 'recognition'; });
+                        if (empty($rec_certs)):
+                        ?>
+                            <div class="footer-link-item"><a href="#">None Available</a></div>
                         <?php else: ?>
-                            <?php foreach ($footer_certs as $fc): ?>
+                            <?php foreach ($rec_certs as $fc): ?>
+                                <div class="footer-link-item">
+                                    <a href="#" class="footer-cert-link" 
+                                       data-pdf="<?php echo sanitize($fc['pdf_path']); ?>" 
+                                       data-title="<?php echo sanitize($fc['title']); ?>" 
+                                       data-number="<?php echo sanitize($fc['certificate_number']); ?>" 
+                                       data-authority="<?php echo sanitize($fc['issue_authority']); ?>" 
+                                       data-issue="<?php echo sanitize($fc['issue_date']); ?>" 
+                                       data-expiry="<?php echo sanitize($fc['expiry_date']); ?>">
+                                        <?php echo sanitize($fc['title']); ?>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+
+                        <!-- Group 2: Safety & Compliance -->
+                        <div class="footer-sub-group-title" style="font-family: var(--font-heading); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-light); margin: 16px 0 6px; letter-spacing: 0.05em;">Safety & Compliance</div>
+                        <?php 
+                        $safe_certs = array_filter($footer_certs, function($c) { return $c['category'] === 'safety'; });
+                        if (empty($safe_certs)):
+                        ?>
+                            <div class="footer-link-item"><a href="#">None Available</a></div>
+                        <?php else: ?>
+                            <?php foreach ($safe_certs as $fc): ?>
                                 <div class="footer-link-item">
                                     <a href="#" class="footer-cert-link" 
                                        data-pdf="<?php echo sanitize($fc['pdf_path']); ?>" 

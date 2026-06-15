@@ -163,21 +163,21 @@ if (isset($pdo)) {
                                 </div>
                             </div>
                             
-                            <!-- Center Column: Mandatory Documents -->
+                            <!-- Center Column: Affiliation & NOC -->
                             <div class="mega-menu-col docs-col">
                                 <div class="col-header">
-                                    <h3>Mandatory Disclosures</h3>
+                                    <h3>Affiliation & NOC</h3>
                                 </div>
                                 <div class="cert-cards-container">
                                     <?php 
-                                    $center_certs = array_filter($all_certs, function($c) {
-                                        return in_array($c['category'], ['recognition', 'safety']);
+                                    $recognition_certs = array_filter($all_certs, function($c) {
+                                        return $c['category'] === 'recognition';
                                     });
-                                    if (empty($center_certs)):
+                                    if (empty($recognition_certs)):
                                     ?>
-                                        <p class="no-certs">No disclosure documents uploaded.</p>
+                                        <p class="no-certs">No affiliation documents uploaded.</p>
                                     <?php else: ?>
-                                        <?php foreach ($center_certs as $cert): ?>
+                                        <?php foreach ($recognition_certs as $cert): ?>
                                             <div class="cert-card" 
                                                  data-pdf="<?php echo sanitize($cert['pdf_path']); ?>" 
                                                  data-title="<?php echo sanitize($cert['title']); ?>" 
@@ -206,21 +206,21 @@ if (isset($pdo)) {
                                 </div>
                             </div>
                             
-                            <!-- Right Column: Academic & Safety Policies -->
+                            <!-- Right Column: Safety & Compliance -->
                             <div class="mega-menu-col policies-col">
                                 <div class="col-header">
-                                    <h3>Academic & Safety</h3>
+                                    <h3>Safety & Compliance</h3>
                                 </div>
                                 <div class="cert-cards-container">
                                     <?php 
-                                    $right_certs = array_filter($all_certs, function($c) {
-                                        return in_array($c['category'], ['academic', 'awards', 'student_safety']);
+                                    $safety_certs = array_filter($all_certs, function($c) {
+                                        return $c['category'] === 'safety';
                                     });
-                                    if (empty($right_certs)):
+                                    if (empty($safety_certs)):
                                     ?>
-                                        <p class="no-certs">No academic documents uploaded.</p>
+                                        <p class="no-certs">No safety certificates uploaded.</p>
                                     <?php else: ?>
-                                        <?php foreach ($right_certs as $cert): ?>
+                                        <?php foreach ($safety_certs as $cert): ?>
                                             <div class="cert-card" 
                                                  data-pdf="<?php echo sanitize($cert['pdf_path']); ?>" 
                                                  data-title="<?php echo sanitize($cert['title']); ?>" 
@@ -297,12 +297,12 @@ if (isset($pdo)) {
                     </div>
                     
                     <div class="drawer-sub-category">
-                        <h5>Mandatory Disclosures</h5>
-                        <?php if (empty($center_certs)): ?>
+                        <h5>Affiliation & NOC</h5>
+                        <?php if (empty($recognition_certs)): ?>
                             <p class="no-certs-mobile">None available</p>
                         <?php else: ?>
                             <div class="drawer-cert-list">
-                                <?php foreach ($center_certs as $cert): ?>
+                                <?php foreach ($recognition_certs as $cert): ?>
                                     <div class="drawer-cert-item" 
                                          data-pdf="<?php echo sanitize($cert['pdf_path']); ?>" 
                                          data-title="<?php echo sanitize($cert['title']); ?>" 
@@ -319,12 +319,12 @@ if (isset($pdo)) {
                     </div>
                     
                     <div class="drawer-sub-category">
-                        <h5>Academic & Safety</h5>
-                        <?php if (empty($right_certs)): ?>
+                        <h5>Safety & Compliance</h5>
+                        <?php if (empty($safety_certs)): ?>
                             <p class="no-certs-mobile">None available</p>
                         <?php else: ?>
                             <div class="drawer-cert-list">
-                                <?php foreach ($right_certs as $cert): ?>
+                                <?php foreach ($safety_certs as $cert): ?>
                                     <div class="drawer-cert-item" 
                                          data-pdf="<?php echo sanitize($cert['pdf_path']); ?>" 
                                          data-title="<?php echo sanitize($cert['title']); ?>" 
