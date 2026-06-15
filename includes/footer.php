@@ -146,9 +146,9 @@ if (isset($pdo)) {
                             </svg>
                         </div>
                         <p>Mobile web browsers do not support direct PDF embedding. Click below to view the file directly.</p>
-                        <a id="cert-modal-download-fallback" href="#" class="btn btn-primary" target="_blank" download>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                            View & Download PDF
+                        <a id="cert-modal-download-fallback" href="#" class="btn btn-primary" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></svg>
+                            View PDF Document
                         </a>
                     </div>
                 </div>
@@ -173,11 +173,11 @@ if (isset($pdo)) {
                         </div>
                     </div>
                     <div class="cert-modal-actions">
-                        <a id="cert-modal-download" href="#" class="btn btn-primary btn-download" target="_blank" download>
+                        <a id="cert-modal-download" href="#" class="btn btn-primary btn-view-fullscreen" target="_blank">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/>
                             </svg>
-                            Download PDF File
+                            View Fullscreen
                         </a>
                     </div>
                 </div>

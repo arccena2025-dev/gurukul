@@ -515,7 +515,7 @@ function initDisclosureMenu() {
         } else {
             modalIframe.style.display = 'block';
             modalFallback.style.display = 'none';
-            modalIframe.src = pdfUrl;
+            modalIframe.src = pdfUrl + '#toolbar=0&navpanes=0';
         }
 
         // Show Modal
