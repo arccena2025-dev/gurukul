@@ -25,7 +25,7 @@ To preserve visual layout minimalism, there is no public "Admin Login" button on
 * **Default Administrator Credentials**:
   * **Username**: `admin`
   * **Password**: `GurukulAdmin2026!`
-  * **Email**: `admin@gurukul.edu`
+  * **Email**: `admin@gurukul.org`
 
 ### 🛡️ Forced First-Login Password Change Policy
 Upon logging in for the very first time with the default credentials, the secure session middleware will **force an immediate redirect** to the Account Profile settings (`admin/profile.php`). 

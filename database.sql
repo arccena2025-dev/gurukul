@@ -209,7 +209,7 @@ CREATE TABLE `contact_submissions` (
 -- Hash calculated using PHP password_hash() with PASSWORD_DEFAULT:
 -- '$2y$10$tM6n.iZ1l8V46gV/qE4JjO6N11/1qE3U26.Kz85T3E7E7V2Z5Z5Z5' (Dynamic seeder will overwrite if needed)
 INSERT INTO `admins` (`id`, `username`, `password_hash`, `email`, `is_first_login`) 
-VALUES (1, 'admin', '$2y$10$wJtK2.tP0JgG7Z7h8j7HcuJj.j20N2e7h01Wb3g0T3T5F5V7V7Z5.', 'admin@gurukul.edu', 1);
+VALUES (1, 'admin', '$2y$10$zdXuC9vEpAZwu9ilYgGeLe3MSHHNRaMivTo3a2kUJOWtXQMVI0bGS', 'admin@gurukul.org', 1);
 
 -- Seed default homepage layout parameters
 INSERT INTO `homepage_content` (`id`, `hero_subtitle`, `cta_banner_desc`) 
