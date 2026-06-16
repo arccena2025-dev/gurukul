@@ -1019,6 +1019,10 @@ include_once 'includes/header.php';
                     <?php 
                     $delay_count = 0;
                     foreach ($leaders as $leader): 
+                        // Skip the quote leader as they are already highlighted in the message box above
+                        if ($quote_leader && $leader['id'] == $quote_leader['id']) {
+                            continue;
+                        }
                         $delay = $delay_count * 0.1;
                         $delay_count++;
                     ?>
