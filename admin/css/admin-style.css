@@ -772,6 +772,15 @@ input:checked + .slider-toggle:before {
     display: block;
 }
 
+/* Hide placeholder when not focused to prevent overlap with floating label */
+.floating-input-field::placeholder {
+    color: transparent !important;
+    transition: color 0.2s ease;
+}
+.floating-input-field:focus::placeholder {
+    color: var(--text-muted) !important;
+}
+
 /* Textarea customization */
 textarea.floating-input-field {
     height: auto !important;

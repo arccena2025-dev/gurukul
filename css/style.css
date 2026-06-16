@@ -1276,6 +1276,15 @@ body.dark-theme-active {
     display: block;
 }
 
+/* Hide placeholder when not focused to prevent overlap with floating label */
+.floating-input-field::placeholder {
+    color: transparent !important;
+    transition: color 0.2s ease;
+}
+.floating-input-field:focus::placeholder {
+    color: var(--text-muted) !important;
+}
+
 body.dark-theme-active .floating-input-field {
     background: rgba(255, 255, 255, 0.04) !important;
     border-color: var(--glass-border) !important;
