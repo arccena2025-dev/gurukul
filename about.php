@@ -905,7 +905,7 @@ include_once 'includes/header.php';
                                 </svg>
                             <?php endif; ?>
                             <div class="intro-badge">
-                                <h4>7+</h4>
+                                <h4 class="stat-counter">7+</h4>
                                 <p>Years Legacy</p>
                             </div>
                         </div>
@@ -921,9 +921,46 @@ include_once 'includes/header.php';
         </section>
         <?php endif; ?>
 
+        <!-- SECTION 6: HERITAGE TIMELINE -->
+        <?php if ($about['show_timeline'] && !empty($timeline)): ?>
+        <section class="section-padding timeline-section">
+            <div class="container">
+                <div class="section-title reveal">
+                    <h2>Our Glorious Journey</h2>
+                    <p>Trace the milestones of Gurukul Academy as we have expanded from a modest schoolhouse to a state-of-the-art modern educational harbor.</p>
+                </div>
+                
+                <div class="timeline-container">
+                    <?php 
+                    $count = 0;
+                    foreach ($timeline as $milestone): 
+                        $count++;
+                        $align_class = ($count % 2 === 1) ? 'timeline-item-left' : 'timeline-item-right';
+                        $reveal_class = ($count % 2 === 1) ? 'reveal-left' : 'reveal-right';
+                        $delay = ($count - 1) * 0.1;
+                    ?>
+                    <div class="timeline-item <?php echo $align_class; ?> reveal <?php echo $reveal_class; ?>" style="transition-delay: <?php echo $delay; ?>s;">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-box">
+                            <div class="timeline-year"><?php echo htmlspecialchars($milestone['milestone_year']); ?></div>
+                            <h4><?php echo htmlspecialchars($milestone['milestone_title']); ?></h4>
+                            <p><?php echo nl2br(htmlspecialchars($milestone['milestone_desc'])); ?></p>
+                            <?php if (!empty($milestone['image_path'])): ?>
+                                <div class="timeline-img-box" style="margin-top: 16px; border-radius: var(--border-radius-sm); overflow: hidden; border: 1px solid rgba(255,255,255,0.08); aspect-ratio: 1.6; background: rgba(0,0,0,0.2);">
+                                    <img src="<?php echo htmlspecialchars($milestone['image_path']); ?>" style="width: 100%; height: 100%; object-fit: cover;" alt="<?php echo htmlspecialchars($milestone['milestone_title']); ?>">
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
+
         <!-- SECTION 2 & 3: VISION, MISSION & PHILOSOPHY -->
         <?php if ($about['show_vision_mission']): ?>
-        <section class="section-padding" style="background-color: rgba(15, 23, 42, 0.015);">
+        <section class="section-padding">
             <div class="container">
                 <div class="section-title reveal">
                     <h2>Our Noble Foundations</h2>
@@ -958,7 +995,9 @@ include_once 'includes/header.php';
                 </div>
             </div>
         </section>
-        <?php endif; ?>        <!-- SECTION 4: LEADERSHIP MESSAGE & EXPERT MENTORS -->
+        <?php endif; ?>
+
+        <!-- SECTION 4: LEADERSHIP MESSAGE & EXPERT MENTORS -->
         <?php if ($about['show_leadership'] && !empty($leaders)): ?>
         <section class="section-padding leadership-message-section">
             <div class="container">
@@ -1047,82 +1086,6 @@ include_once 'includes/header.php';
                                 <a href="#" class="mentor-social-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
                                 <a href="#" class="mentor-social-btn"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></a>
                             </div>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </section>
-        <?php endif; ?>
-
-        <!-- SECTION 5: ACHIEVEMENTS & ACCOLADES -->
-        <?php if ($about['show_achievements']): ?>
-        <section class="section-padding">
-            <div class="container">
-                <div class="section-title reveal">
-                    <h2>Key Academic Accolades</h2>
-                    <p>Recognitions and benchmark scores highlighting our unwavering commitment to educational and leadership success.</p>
-                </div>
-
-                <div class="achievements-grid">
-                    <!-- Achievement 1 -->
-                    <div class="achievement-card reveal">
-                        <div class="achievement-icon">
-                            <?php echo htmlspecialchars($about['achievement_1_metric'] ?? '100%'); ?>
-                        </div>
-                        <h3><?php echo htmlspecialchars($about['achievement_1_title'] ?? ''); ?></h3>
-                        <p><?php echo htmlspecialchars($about['achievement_1_desc'] ?? ''); ?></p>
-                    </div>
-                    <!-- Achievement 2 -->
-                    <div class="achievement-card reveal" style="transition-delay: 0.1s;">
-                        <div class="achievement-icon" style="background: rgba(13, 148, 136, 0.08); color: var(--secondary-light); border-color: rgba(13, 148, 136, 0.2);">
-                            <?php echo htmlspecialchars($about['achievement_2_metric'] ?? 'Rank #1'); ?>
-                        </div>
-                        <h3><?php echo htmlspecialchars($about['achievement_2_title'] ?? ''); ?></h3>
-                        <p><?php echo htmlspecialchars($about['achievement_2_desc'] ?? ''); ?></p>
-                    </div>
-                    <!-- Achievement 3 -->
-                    <div class="achievement-card reveal" style="transition-delay: 0.2s;">
-                        <div class="achievement-icon">
-                            <?php echo htmlspecialchars($about['achievement_3_metric'] ?? 'A+'); ?>
-                        </div>
-                        <h3><?php echo htmlspecialchars($about['achievement_3_title'] ?? ''); ?></h3>
-                        <p><?php echo htmlspecialchars($about['achievement_3_desc'] ?? ''); ?></p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <?php endif; ?>
-
-        <!-- SECTION 6: HERITAGE TIMELINE -->
-        <?php if ($about['show_timeline'] && !empty($timeline)): ?>
-        <section class="section-padding timeline-section">
-            <div class="container">
-                <div class="section-title reveal">
-                    <h2>Our Glorious Journey</h2>
-                    <p>Trace the milestones of Gurukul Academy as we have expanded from a modest schoolhouse to a state-of-the-art modern educational harbor.</p>
-                </div>
-                
-                <div class="timeline-container">
-                    <?php 
-                    $count = 0;
-                    foreach ($timeline as $milestone): 
-                        $count++;
-                        $align_class = ($count % 2 === 1) ? 'timeline-item-left' : 'timeline-item-right';
-                        $reveal_class = ($count % 2 === 1) ? 'reveal-left' : 'reveal-right';
-                        $delay = ($count - 1) * 0.1;
-                    ?>
-                    <div class="timeline-item <?php echo $align_class; ?> reveal <?php echo $reveal_class; ?>" style="transition-delay: <?php echo $delay; ?>s;">
-                        <div class="timeline-dot"></div>
-                        <div class="timeline-box">
-                            <div class="timeline-year"><?php echo htmlspecialchars($milestone['milestone_year']); ?></div>
-                            <h4><?php echo htmlspecialchars($milestone['milestone_title']); ?></h4>
-                            <p><?php echo nl2br(htmlspecialchars($milestone['milestone_desc'])); ?></p>
-                            <?php if (!empty($milestone['image_path'])): ?>
-                                <div class="timeline-img-box" style="margin-top: 16px; border-radius: var(--border-radius-sm); overflow: hidden; border: 1px solid rgba(255,255,255,0.08); aspect-ratio: 1.6; background: rgba(0,0,0,0.2);">
-                                    <img src="<?php echo htmlspecialchars($milestone['image_path']); ?>" style="width: 100%; height: 100%; object-fit: cover;" alt="<?php echo htmlspecialchars($milestone['milestone_title']); ?>">
-                                </div>
-                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -1246,12 +1209,52 @@ include_once 'includes/header.php';
         </section>
         <?php endif; ?>
 
+        <!-- SECTION 5: ACHIEVEMENTS & ACCOLADES -->
+        <?php if ($about['show_achievements']): ?>
+        <section class="section-padding">
+            <div class="container">
+                <div class="section-title reveal">
+                    <h2>Key Academic Accolades</h2>
+                    <p>Recognitions and benchmark scores highlighting our unwavering commitment to educational and leadership success.</p>
+                </div>
+
+                <div class="achievements-grid">
+                    <!-- Achievement 1 -->
+                    <div class="achievement-card reveal">
+                        <div class="achievement-icon stat-counter">
+                            <?php echo htmlspecialchars($about['achievement_1_metric'] ?? '100%'); ?>
+                        </div>
+                        <h3><?php echo htmlspecialchars($about['achievement_1_title'] ?? ''); ?></h3>
+                        <p><?php echo htmlspecialchars($about['achievement_1_desc'] ?? ''); ?></p>
+                    </div>
+                    <!-- Achievement 2 -->
+                    <div class="achievement-card reveal" style="transition-delay: 0.1s;">
+                        <div class="achievement-icon stat-counter" style="background: rgba(13, 148, 136, 0.08); color: var(--secondary-light); border-color: rgba(13, 148, 136, 0.2);">
+                            <?php echo htmlspecialchars($about['achievement_2_metric'] ?? 'Rank #1'); ?>
+                        </div>
+                        <h3><?php echo htmlspecialchars($about['achievement_2_title'] ?? ''); ?></h3>
+                        <p><?php echo htmlspecialchars($about['achievement_2_desc'] ?? ''); ?></p>
+                    </div>
+                    <!-- Achievement 3 -->
+                    <div class="achievement-card reveal" style="transition-delay: 0.2s;">
+                        <div class="achievement-icon stat-counter">
+                            <?php echo htmlspecialchars($about['achievement_3_metric'] ?? 'A+'); ?>
+                        </div>
+                        <h3><?php echo htmlspecialchars($about['achievement_3_title'] ?? ''); ?></h3>
+                        <p><?php echo htmlspecialchars($about['achievement_3_desc'] ?? ''); ?></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
+
         <script>
         let facultyExpanded = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             initFacultyFilters();
             initFacultyCollapsible();
+            initStatsCounters();
         });
 
         function initFacultyCollapsible() {
@@ -1352,6 +1355,68 @@ include_once 'includes/header.php';
                     filterFaculty();
                 });
             });
+        }
+
+        function initStatsCounters() {
+            const counters = document.querySelectorAll('.stat-counter');
+            if (counters.length === 0) return;
+
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        obs.unobserve(entry.target); // Animate only once
+                    }
+                });
+            }, observerOptions);
+
+            counters.forEach(el => {
+                const text = el.textContent.trim();
+                const match = text.match(/^([^\d]*)(\d+)([^\d]*)$/);
+                if (match) {
+                    const prefix = match[1];
+                    const target = parseInt(match[2], 10);
+                    const suffix = match[3];
+                    
+                    el.dataset.target = target;
+                    el.dataset.prefix = prefix;
+                    el.dataset.suffix = suffix;
+                    el.textContent = prefix + '0' + suffix;
+                    observer.observe(el);
+                }
+            });
+
+            function animateCounter(el) {
+                const target = parseInt(el.dataset.target, 10);
+                const prefix = el.dataset.prefix || '';
+                const suffix = el.dataset.suffix || '';
+                const duration = 1500; // ms
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // Ease out cubic
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    const currentVal = Math.floor(easeProgress * target);
+                    
+                    el.textContent = prefix + currentVal + suffix;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        el.textContent = prefix + target + suffix;
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
         }
         </script>
 
