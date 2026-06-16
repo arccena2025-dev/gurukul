@@ -46,8 +46,15 @@
                 const label = group.querySelector('label');
                 if (!input || !label) return;
                 
-                // Ensure inputs are not hidden or submit/reset buttons
-                if (input.type === 'submit' || input.type === 'hidden' || input.type === 'button' || input.type === 'reset') return;
+                // Ensure inputs are not hidden, buttons, checkboxes, or radios
+                if (input.type === 'submit' || 
+                    input.type === 'hidden' || 
+                    input.type === 'button' || 
+                    input.type === 'reset' || 
+                    input.type === 'checkbox' || 
+                    input.type === 'radio') {
+                    return;
+                }
                 
                 // Upgrade classes dynamically
                 group.classList.add('floating-container');
@@ -55,9 +62,10 @@
                 label.classList.add('floating-label-text');
                 
                 const isFile = input.type === 'file';
+                const isSelect = input.tagName.toLowerCase() === 'select';
                 
                 const checkValue = () => {
-                    if (isFile || (input.value && input.value.trim() !== '')) {
+                    if (isFile || isSelect || (input.value && input.value.trim() !== '')) {
                         group.classList.add('is-filled');
                     } else {
                         group.classList.remove('is-filled');

@@ -395,8 +395,15 @@ function initFloatingLabels() {
         const label = group.querySelector('label');
         if (!input || !label) return;
         
-        // Ensure inputs are not hidden or submit buttons
-        if (input.type === 'submit' || input.type === 'hidden' || input.type === 'button') return;
+        // Ensure inputs are not hidden, buttons, checkboxes, or radios
+        if (input.type === 'submit' || 
+            input.type === 'hidden' || 
+            input.type === 'button' || 
+            input.type === 'reset' || 
+            input.type === 'checkbox' || 
+            input.type === 'radio') {
+            return;
+        }
         
         // Upgrade classes dynamically
         group.classList.add('floating-container');
@@ -405,9 +412,10 @@ function initFloatingLabels() {
         
         // If it's a file input, we want it to always be considered filled so label doesn't overlap chosen file
         const isFile = input.type === 'file';
+        const isSelect = input.tagName.toLowerCase() === 'select';
         
         const checkValue = () => {
-            if (isFile || (input.value && input.value.trim() !== '')) {
+            if (isFile || isSelect || (input.value && input.value.trim() !== '')) {
                 group.classList.add('is-filled');
             } else {
                 group.classList.remove('is-filled');
