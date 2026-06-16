@@ -809,15 +809,23 @@ $custom_css = '
             display: none !important;
         }
 
-        /* Collapsible Faculty Section */
-        .faculty-collapsible-wrapper {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+        /* Collapsible Faculty Cards */
+        .faculty-card.collapsed-card {
+            display: none !important;
         }
-        .faculty-collapsible-wrapper.expanded {
-            opacity: 1;
+        .faculty-grid.expanded .faculty-card.collapsed-card {
+            display: block !important;
+            animation: fadeInUpFaculty 0.5s ease forwards;
+        }
+        @keyframes fadeInUpFaculty {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .faculty-toggle-btn {
             margin-top: 15px;
@@ -1123,17 +1131,12 @@ include_once 'includes/header.php';
         <?php if (($about['show_faculty'] ?? 1) && !empty($faculties)): ?>
         <section class="section-padding faculty-section" style="background-color: rgba(15, 23, 42, 0.005); border-top: 1px solid var(--glass-border);">
             <div class="container">
-                <div class="section-title reveal" style="margin-bottom: 25px;">
+                <div class="section-title reveal" style="margin-bottom: 35px;">
                     <h2>Expert Faculty & Educators</h2>
                     <p>Fostering academic excellence, moral leadership, and logical thinking through experienced, subject-matter specialists.</p>
-                    <button class="faculty-toggle-btn" id="faculty-toggle-btn" aria-expanded="false" aria-controls="faculty-collapse-content">
-                        <span>Show Faculty Directory</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </button>
                 </div>
 
-                <div class="faculty-collapsible-wrapper" id="faculty-collapse-content">
-                    <!-- Faculty Search and Filter Controls -->
+                <!-- Faculty Search and Filter Controls -->
                 <div class="faculty-controls reveal">
                     <div class="search-box-wrapper">
                         <input type="text" id="faculty-search-input" placeholder="Search faculty by name or subject..." class="form-control faculty-search">
@@ -1152,12 +1155,11 @@ include_once 'includes/header.php';
                 </div>
 
                 <!-- Faculty Members Grid -->
-                <div class="mentor-grid faculty-grid">
+                <div class="mentor-grid faculty-grid" id="faculty-grid">
                     <?php 
                     $delay_idx = 0;
                     foreach ($faculties as $fac): 
                         $delay = ($delay_idx % 4) * 0.05;
-                        $delay_idx++;
                         
                         // Map subject to filter categories
                         $sub = strtolower($fac['subject'] ?? '');
@@ -1175,8 +1177,14 @@ include_once 'includes/header.php';
                         } elseif (strpos($sub, 'pre-primary') !== false || strpos($des, 'pre-primary') !== false || strpos($sub, 'nursery') !== false || strpos($sub, 'kg') !== false) {
                             $category = 'pre-primary';
                         }
+
+                        $card_class = 'mentor-card faculty-card reveal';
+                        if ($delay_idx >= 8) {
+                            $card_class .= ' collapsed-card';
+                        }
+                        $delay_idx++;
                     ?>
-                    <div class="mentor-card faculty-card reveal" 
+                    <div class="<?php echo $card_class; ?>" 
                          style="transition-delay: <?php echo $delay; ?>s;"
                          data-name="<?php echo strtolower(sanitize($fac['name'])); ?>"
                          data-subject="<?php echo strtolower(sanitize($fac['subject'])); ?>"
@@ -1219,12 +1227,24 @@ include_once 'includes/header.php';
                 <div id="no-faculty-results" style="display: none; text-align: center; padding: 48px; background: rgba(255, 255, 255, 0.02); border-radius: var(--border-radius-sm); border: 1px dashed var(--glass-border); margin-top: 24px;">
                     <p style="color: var(--text-muted); font-size: 1.1rem; margin: 0;">No faculty members found matching your search criteria.</p>
                 </div>
+
+                <!-- Toggle Button for Collapsed Cards -->
+                <?php if (count($faculties) > 8): ?>
+                <div class="text-center reveal" id="faculty-toggle-container" style="margin-top: 35px;">
+                    <button class="faculty-toggle-btn" id="faculty-toggle-btn" aria-expanded="false" aria-controls="faculty-grid">
+                        <span>Show More Educators</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
                 </div>
+                <?php endif; ?>
+
             </div>
         </section>
         <?php endif; ?>
 
         <script>
+        let facultyExpanded = false;
+
         document.addEventListener('DOMContentLoaded', () => {
             initFacultyFilters();
             initFacultyCollapsible();
@@ -1232,40 +1252,29 @@ include_once 'includes/header.php';
 
         function initFacultyCollapsible() {
             const toggleBtn = document.getElementById('faculty-toggle-btn');
-            const collapseContent = document.getElementById('faculty-collapse-content');
+            const gridElement = document.getElementById('faculty-grid');
             
-            if (!toggleBtn || !collapseContent) return;
+            if (!toggleBtn || !gridElement) return;
             
             toggleBtn.addEventListener('click', () => {
-                const isExpanded = toggleBtn.classList.contains('expanded');
+                facultyExpanded = !facultyExpanded;
                 
-                if (!isExpanded) {
-                    // Expand
+                if (facultyExpanded) {
+                    gridElement.classList.add('expanded');
                     toggleBtn.classList.add('expanded');
-                    toggleBtn.querySelector('span').textContent = 'Hide Faculty Directory';
+                    toggleBtn.querySelector('span').textContent = 'Show Less';
                     toggleBtn.setAttribute('aria-expanded', 'true');
-                    
-                    collapseContent.classList.add('expanded');
-                    collapseContent.style.maxHeight = collapseContent.scrollHeight + 'px';
-                    
-                    // Allow auto-adjust of height after transition completes for filters & search
-                    setTimeout(() => {
-                        if (toggleBtn.classList.contains('expanded')) {
-                            collapseContent.style.maxHeight = 'none';
-                        }
-                    }, 500);
                 } else {
-                    // Collapse
+                    gridElement.classList.remove('expanded');
                     toggleBtn.classList.remove('expanded');
-                    toggleBtn.querySelector('span').textContent = 'Show Faculty Directory';
+                    toggleBtn.querySelector('span').textContent = 'Show More Educators';
                     toggleBtn.setAttribute('aria-expanded', 'false');
                     
-                    collapseContent.style.maxHeight = collapseContent.scrollHeight + 'px';
-                    // Force reflow
-                    collapseContent.offsetHeight;
-                    
-                    collapseContent.classList.remove('expanded');
-                    collapseContent.style.maxHeight = '0px';
+                    // Smooth scroll to the top of the faculty section when collapsing back
+                    const section = document.querySelector('.faculty-section');
+                    if (section) {
+                        section.scrollIntoView({ behavior: 'smooth' });
+                    }
                 }
             });
         }
@@ -1275,6 +1284,8 @@ include_once 'includes/header.php';
             const filterBtns = document.querySelectorAll('.filter-btn');
             const facultyCards = document.querySelectorAll('.faculty-card');
             const noResults = document.getElementById('no-faculty-results');
+            const gridElement = document.getElementById('faculty-grid');
+            const toggleContainer = document.getElementById('faculty-toggle-container');
 
             if (!searchInput || facultyCards.length === 0) return;
 
@@ -1283,6 +1294,21 @@ include_once 'includes/header.php';
 
             function filterFaculty() {
                 let visibleCount = 0;
+                const isSearchingOrFiltering = (searchQuery !== '' || currentFilter !== 'all');
+
+                if (isSearchingOrFiltering) {
+                    if (gridElement) gridElement.classList.add('expanded');
+                    if (toggleContainer) toggleContainer.style.display = 'none';
+                } else {
+                    if (gridElement) {
+                        if (facultyExpanded) {
+                            gridElement.classList.add('expanded');
+                        } else {
+                            gridElement.classList.remove('expanded');
+                        }
+                    }
+                    if (toggleContainer) toggleContainer.style.display = 'block';
+                }
 
                 facultyCards.forEach(card => {
                     const name = card.getAttribute('data-name') || '';
